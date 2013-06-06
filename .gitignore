@@ -3,3 +3,7 @@
 
 # Example code in package build process
 *-Ex.R
+
+.~lock.*
+.DS_Store
+.*.swp
