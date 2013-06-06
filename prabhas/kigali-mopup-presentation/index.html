@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NMIS Mopup</title>
+  <meta charset="utf-8">
+  <meta name="description" content="NMIS Mopup">
+  <meta name="author" content="Data Team, Modi Research Group">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+    
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+    <!-- END LOGO SLIDE -->
+    
+
+    <!-- TITLE SLIDE -->
+    <!-- Should I move this to a Local Layout File? -->
+    <slide class="title-slide segue nobackground">
+      <hgroup class="auto-fadein">
+        <h1>NMIS Mopup</h1>
+        <h2>the status, now, and future needs</h2>
+        <p>Data Team, Modi Research Group<br/></p>
+      </hgroup>
+          </slide>
+
+    <!-- SLIDES -->
+      <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Outline</h2>
+  </hgroup>
+  <article>
+    <ol>
+<li>Mopup -- a process overview</li>
+<li>Outcomes of the matching process</li>
+<li>Missing facilities</li>
+<li>Baseline coverage, a retrospective</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Mopup, process overview</h2>
+  </hgroup>
+  <article>
+    <p>Mopup was a many-stage process. It involves</p>
+
+<ol>
+<li>Facility Lists. Obtained by TAs, and entered using the formhub data tool to EI.</li>
+<li>Data Matching. TAs matched the facilities submitted through baseline with data from baseline.</li>
+<li>Analysis to scope out the work required for mopup (this presentation).</li>
+<li>Teams go to field and survey the &quot;outstanding&quot; facilities.</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Facility List process overview</h2>
+  </hgroup>
+  <article>
+    <p>Facility lists were submitted for 773 of 774 LGAs. A quick visual comparison of the number of facilities per LGA, comparing the facility lists and the baseline list is belows (each point is an LGA).
+Each point below the line is an LGA for which the number of facilities in the facility list was less than 80% of those in baseline; meaning the officials&#39; lists are incomplete by a 20% margin.</p>
+
+<p><img src="figure/unnamed-chunk-1.png" alt="plot of chunk unnamed-chunk-1"> </p>
+
+<p>There are  59 such lgas.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <!-- ## Facility List Process Overview (2) 
+#```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=13, cache=TRUE}
+  shortfall_lgas <- arrange(subset(matched, total_facility_list/total_baseline < 0.8),
+                      state, lga)
+  lganamesdump2 = function(df1) {
+    d_ply(df1, .(state), function (df) {
+      print(strwrap(str_c(toupper(df[1,]$state), ": ", str_c(tolower(df$lga), collapse=", ")), 90))
+      })
+  }
+  lganamesdump2(shortfall_lgas)
+  #paste(toupper(shortfall_lgas$state), tolower(shortfall_lgas$lga), sep=" > ")
+```
+--->
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+
+  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+<!-- Grab CDN jQuery, fall back to local if offline -->
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery-1.7.min.js"><\/script>')</script>
+<!-- Load Javascripts for Widgets -->
+<!-- LOAD HIGHLIGHTER JS FILES -->
+<script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- DONE LOADING HIGHLIGHTER JS FILES -->
+</html>

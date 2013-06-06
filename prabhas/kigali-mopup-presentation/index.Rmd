@@ -1,0 +1,64 @@
+---
+title       : NMIS Mopup
+subtitle    : the status, now, and future needs
+author      : Data Team, Modi Research Group
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+
+---
+
+## Outline
+1. Mopup -- a process overview
+2. Outcomes of the matching process
+3. Missing facilities
+4. Baseline coverage, a retrospective
+
+---
+
+## Mopup, process overview
+The stages of the mopup process include:
+1. Facility Lists. Obtained by TAs, and entered using the formhub data tool to EI.
+2. Data Matching. TAs matched the facilities submitted through baseline with data from baseline.
+3. Analysis to scope out the work required for mopup (this presentation).
+4. Teams go to field and survey the "outstanding" facilities.
+
+---
+
+## Facility List process overview
+
+Facility lists were submitted for 773 of 774 LGAs. A quick visual comparison of the number of facilities per LGA, comparing the facility lists and the baseline list is belows (each point is an LGA).
+Each point below the line is an LGA for which the number of facilities in the facility list was less than 80% of those in baseline; meaning the officials' lists are incomplete by a 20% margin.
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=13, cache=TRUE}
+  library(plyr)
+  library(ggplot2)
+  library(scales)
+  # may need to change the following line to get running on your computer
+  setwd("~/Code/presentations/prabhas/kigali-mopup-presentation/")
+  matched <- read.csv("data/all_matched_data.csv")
+  ggplot(data=matched, aes(x=total_baseline, y=total_facility_list)) + geom_point() + 
+    geom_abline(slope=0.8) +
+    labs(x="Total facilities from baseline", y="Total facilities from Facility Lists",
+         title = "Comparison of baseline and facility lists; (slope of line = 0.8)")
+```
+There are  59 such lgas.
+
+---
+
+<!-- ## Facility List Process Overview (2) 
+#```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=13, cache=TRUE}
+  shortfall_lgas <- arrange(subset(matched, total_facility_list/total_baseline < 0.8),
+                      state, lga)
+  lganamesdump2 = function(df1) {
+    d_ply(df1, .(state), function (df) {
+      print(strwrap(str_c(toupper(df[1,]$state), ": ", str_c(tolower(df$lga), collapse=", ")), 90))
+      })
+  }
+  lganamesdump2(shortfall_lgas)
+  #paste(toupper(shortfall_lgas$state), tolower(shortfall_lgas$lga), sep=" > ")
+```
+--->
