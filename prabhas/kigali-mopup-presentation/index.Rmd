@@ -21,6 +21,7 @@ mode        : selfcontained # {standalone, draft}
 
 ## Mopup, process overview
 The stages of the mopup process include:
+
 1. Facility Lists. Obtained by TAs, and entered using the formhub data tool to EI.
 2. Data Matching. TAs matched the facilities submitted through baseline with data from baseline.
 3. Analysis to scope out the work required for mopup (this presentation).
@@ -40,6 +41,7 @@ Each point below the line is an LGA for which the number of facilities in the fa
   # may need to change the following line to get running on your computer
   setwd("~/Code/presentations/prabhas/kigali-mopup-presentation/")
   matched <- read.csv("data/all_matched_data.csv")
+  matched$ratio_fl_over_bl <- matched$total_facility_list / matched$total_baseline
   ggplot(data=matched, aes(x=total_baseline, y=total_facility_list)) + geom_point() + 
     geom_abline(slope=0.8) +
     labs(x="Total facilities from baseline", y="Total facilities from Facility Lists",
@@ -49,16 +51,32 @@ There are  59 such lgas.
 
 ---
 
-<!-- ## Facility List Process Overview (2) 
-#```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=13, cache=TRUE}
+## Facility List Process Overview (2) 
+The 59 lgas:
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=13, cache=TRUE}
   shortfall_lgas <- arrange(subset(matched, total_facility_list/total_baseline < 0.8),
                       state, lga)
-  lganamesdump2 = function(df1) {
+  lganamesdump = function(df1) {
     d_ply(df1, .(state), function (df) {
       print(strwrap(str_c(toupper(df[1,]$state), ": ", str_c(tolower(df$lga), collapse=", ")), 90))
       })
   }
-  lganamesdump2(shortfall_lgas)
-  #paste(toupper(shortfall_lgas$state), tolower(shortfall_lgas$lga), sep=" > ")
+  #lganamesdump(shortfall_lgas)
+
+  library(rgeos)
+  library(maptools)
+  library(scales)
+  library(classInt)
+  lgashp <- readShapeSpatial('~/Dropbox/Nigeria/Nigeria 661 Baseline Data Cleaning/raw_data/nga_lgas/nga_lgas.shp')
+  lgas <- fortify(lgashp, region="lga_id")
+  lga_map <- function(geom_map_thingy) {
+    ggplot() + geom_map_thingy + expand_limits(x=lgas$long, y=lgas$lat) +
+      theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "bottom")
+  }
+  matched$RatioCategory = cut(matched$ratio_fl_over_bl, breaks=c(0,.8,1.2,2.0,29), right=F)
+  levels(matched$RatioCategory) <- c("0-80% (small facility lists)", "80-120% (roughly the same)", "120-200% (up to double)", "200% + (more than double)")
+  p <- lga_map(geom_map(data = matched, aes(map_id = lga_id, fill = RatioCategory), map=lgas)) 
 ```
---->
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=8, fig.width=13, cache=TRUE}
+  p + scale_fill_manual(values = c("#F4A582", "#F7F7F7", "#92C5DE", "#0571B0")) # colorbrewer, turned 5-scale into 4-scale
+```
