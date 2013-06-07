@@ -51,8 +51,7 @@ There are  59 such lgas.
 
 ---
 
-## Facility List Process Overview (2) 
-The 59 lgas:
+## Facility List Overview (2) 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=13, cache=TRUE}
   shortfall_lgas <- arrange(subset(matched, total_facility_list/total_baseline < 0.8),
                       state, lga)
@@ -75,8 +74,8 @@ The 59 lgas:
   }
   matched$RatioCategory = cut(matched$ratio_fl_over_bl, breaks=c(0,.8,1.2,2.0,29), right=F)
   levels(matched$RatioCategory) <- c("0-80% (small facility lists)", "80-120% (roughly the same)", "120-200% (up to double)", "200% + (more than double)")
-  p <- lga_map(geom_map(data = matched, aes(map_id = lga_id, fill = RatioCategory), map=lgas)) 
+  p <- lga_map(geom_map(data = matched, aes(map_id = lga_id, fill = RatioCategory), map=lgas))
 ```
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=8, fig.width=13, cache=TRUE}
-  p + scale_fill_manual(values = c("#F4A582", "#F7F7F7", "#92C5DE", "#0571B0")) # colorbrewer, turned 5-scale into 4-scale
+  p + scale_fill_manual(values = c("#F4A582", "#F7F7F7", "#92C5DE", "#0571B0"), na.value="grey") # colorbrewer, turned 5-scale into 4-scale
 ```

@@ -1,2 +1,2 @@
 index.html: index.Rmd MakePresentation.R
-	MakePresentation.R
+	R CMD BATCH MakePresentation.R /dev/null
