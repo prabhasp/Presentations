@@ -1,2 +1,2 @@
-index.html: index.Rmd MakePresentation.R
-	R CMD BATCH MakePresentation.R /dev/null
+index.html: index.Rmd MakePresentation.R ~/Code/Presentations/prabhas/NigeriaPresentationUtils.R data/all_matched_data.csv
+	R CMD BATCH MakePresentation.R /dev/tty
