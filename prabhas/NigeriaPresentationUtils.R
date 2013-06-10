@@ -20,16 +20,18 @@ library(scales)
 
 lgashp <- readShapeSpatial('~/Dropbox/Nigeria/Nigeria 661 Baseline Data Cleaning/raw_data/nga_lgas/nga_lgas.shp')
 lgas <- fortify(lgashp, region="lga_id")
+stateshp <- readShapeSpatial('~/Dropbox/Nigeria/Nigeria 661 Baseline Data Cleaning/raw_data/nga_states/nga_states.shp')
+states <- fortify(stateshp)
 
-state_overlay <- function(lgashp=lgashp) {
-  lgaCentroids <- data.frame(gCentroid(lgashp, byid=T))
-  lgaCentroids$ID <- row.names(lgaCentroids)
-  lgashpd <- cbind(data.frame(lgashp), ID=getSpPPolygonsIDSlots(lgashp) )
-  lgaCs <- merge(lgaCentroids, lgashpd, by="ID")
-  stateCenters <- ddply(lgaCs, .(STATE), summarize, cx=mean(x), cy=mean(y))
+state_overlay <- function() {
+  stateCentroids <- data.frame(gCentroid(stateshp, byid=T))
+  stateCentroids$SID <- row.names(stateCentroids)
+  stateshpd <- data.frame(stateshp, SID=getSpPPolygonsIDSlots(stateshp) )
+  stateCenters <- merge(stateCentroids, stateshpd, by="SID")
+  stateCenters <- rename(stateCenters, c("Name"="STATE"))
   stateCenters
 }
-stateCenters <- state_overlay(lgashp)
+stateCenters <- state_overlay()
 
 lga_map = function(geom_map_thingy) {
   ggplot() + geom_map_thingy + expand_limits(x=lgas$long, y=lgas$lat) +
@@ -37,7 +39,9 @@ lga_map = function(geom_map_thingy) {
           axis.ticks = element_blank(), panel.grid=element_blank(), 
           panel.background=element_rect(fill='#888888'),
           legend.position = "bottom") +
-    geom_text(data=stateCenters, aes(x=cx, y=cy, label=STATE))
+    geom_text(data=stateCenters, aes(x=x, y=y, label=STATE)) +
+    geom_map(data=states, aes(map_id=id), fill="transparent", color='#444444', map=states) +
+    scale_fill_brewer(type="seq", palette=2)
 }
 
 ratioToPct <- function(numvec, round.digits=0) {
