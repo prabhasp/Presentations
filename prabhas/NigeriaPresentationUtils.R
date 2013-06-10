@@ -21,16 +21,23 @@ library(scales)
 lgashp <- readShapeSpatial('~/Dropbox/Nigeria/Nigeria 661 Baseline Data Cleaning/raw_data/nga_lgas/nga_lgas.shp')
 lgas <- fortify(lgashp, region="lga_id")
 
-state_overlay <- function() {
-  lgaCentroids <- gCentroid(lgashp, byid=T)
+state_overlay <- function(lgashp=lgashp) {
+  lgaCentroids <- data.frame(gCentroid(lgashp, byid=T))
+  lgaCentroids$ID <- row.names(lgaCentroids)
+  lgashpd <- cbind(data.frame(lgashp), ID=getSpPPolygonsIDSlots(lgashp) )
+  lgaCs <- merge(lgaCentroids, lgashpd, by="ID")
+  stateCenters <- ddply(lgaCs, .(STATE), summarize, cx=mean(x), cy=mean(y))
+  stateCenters
 }
+stateCenters <- state_overlay(lgashp)
 
 lga_map = function(geom_map_thingy) {
   ggplot() + geom_map_thingy + expand_limits(x=lgas$long, y=lgas$lat) +
     theme(axis.title=element_blank(), axis.text=element_blank(),
           axis.ticks = element_blank(), panel.grid=element_blank(), 
           panel.background=element_rect(fill='#888888'),
-          legend.position = "bottom")
+          legend.position = "bottom") +
+    geom_text(data=stateCenters, aes(x=cx, y=cy, label=STATE))
 }
 
 ratioToPct <- function(numvec, round.digits=0) {

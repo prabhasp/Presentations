@@ -19,6 +19,7 @@ lgas <- lgas
 lgashp <- lgashp
 lga_map <- lga_map
 flipAndPrint <- flipAndPrint
+stateCenters <- stateCenters
 ```
 ## Outline
 1. Mopup -- a process overview
@@ -144,10 +145,8 @@ lga_map(geom_map(data = matched, aes(map_id = lga_id, fill = Missing.binned), ma
 
 ---
 
-## Missing facilities across  Nigeria
+## Thank you
 
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=8, fig.width=13, cache=TRUE}
-#source("../NigeriaPresentationUtils.R")
-lga_map(geom_map(data = matched, aes(map_id = lga_id, fill = Missing.binned), map=lgas)) +
-    scale_fill_brewer(type="seq", palette=2)
-```
+Modi Research Group
+* Data Team - Salah Chafik, Zaiming Yao, Prabhas Pokharel
+* Software Team - Mark Johnston, Myf Ma, Prabhas Pokharel
