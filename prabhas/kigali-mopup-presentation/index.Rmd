@@ -35,15 +35,15 @@ The stages of the mopup process include:
 
 1. Facility Lists. Obtained by TAs, and entered using the formhub data tool to EI.
 2. Data Matching. TAs matched the facilities submitted through baseline with data from baseline.
-3. Analysis to scope out the work required for mopup (this presentation).
-4. Teams go to field and survey the "outstanding" facilities.
+3. Analysis. Scoping out the work required for mopup (this presentation).
+4. Enumeration. Teams go to field and survey the "outstanding" facilities.
 
 ---
 
 ## Facility List process overview
 
 Facility lists were submitted for 773 of 774 LGAs. A quick visual comparison of the number of facilities per LGA, comparing the facility lists and the baseline list is belows (each point is an LGA).
-Each point below the line is an LGA for which the number of facilities in the facility list was less than 80% of those in baseline; meaning the officials' lists are incomplete by a 20% margin.
+Each point below the line is an LGA for which the number of facilities in the facility list was less than 80% of those in baseline; meaning the officials' lists are incomplete by at least a 20% margin.
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=13, cache=TRUE}
   # may need to change the following line to get running on your computer  
