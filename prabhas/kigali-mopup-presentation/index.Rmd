@@ -85,7 +85,7 @@ Some examples of why matching is necessary:
 ---
 
 ## Progress towards the matching exercise
-In total, 92% of the facilities in baseline have been matched.
+In total, 92% of the facilities in baseline have been marked as either being a match, or as a no-match.
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=13, cache=TRUE}
   library(classInt)
@@ -99,6 +99,23 @@ In total, 92% of the facilities in baseline have been matched.
 ```
 
 ---
+## Progress towards the matching exercise (2)
+Some LGAs have a high proportion of baseline facilities marked as not being a match.
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=13, cache=TRUE}
+  library(classInt)
+  #brks <- classIntervals((matched$total_baseline - matched$left_baseline) / matched$total_baseline, n=5, style="fisher")$brks
+  matched$UnmatchedRatio <- cut((matched$left_baseline) / matched$total_baseline, breaks=c(0,.3,.6,.9,1), include.lowest=T, 
+                              labels=c("0-30%", "30-60%", "60-90%", "90% +"))
+```
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=7, fig.width=13, cache=TRUE}
+#source("../NigeriaPresentationUtils.R")
+  lga_map(geom_map(data = matched, aes(map_id = lga_id, fill = UnmatchedRatio), map=lgas))
+```
+
+---
+
+
 
 ## Missing facilities
 Missing facilities are defined as any facility from a facility list that was not matched to a facility in baseline. An aggregate view is below:
