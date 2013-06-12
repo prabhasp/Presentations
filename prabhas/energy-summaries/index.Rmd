@@ -1,0 +1,43 @@
+---
+title       : NMIS Energy Data Overview
+subtitle    : 
+author      : Data Team, Modi Research Group
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+
+---
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+setwd("~/Code/presentations/prabhas/energy-summaries/")
+source("../NigeriaPresentationUtils.R")
+# importing variables... this is how we have to do it sadly
+lgas <- lgas
+lgashp <- lgashp
+lga_map <- lga_map
+flipAndPrint <- flipAndPrint
+states <- states
+stateCenters <- stateCenters
+```
+## Outline
+1. Localities Survey, coverage
+2. Other surveys, what data is included
+3. LGA wides summaries of data
+4. Katsina -- 4 LGA example of detailed demand analysis
+
+---
+
+## Coverage of localities survey
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+source("~/Code/formhub.R/R/formhub.R")
+library(doBy)
+loc <- formhubRead("data/Local_661_Merged.csv", "data/Localities_05_06_2012.json")
+loc$hhnum <- recodeVar(loc$households_number, 
+                       src=c("101_to_250_hh", "21_to_50_hh", "251_to_500_hh", "51_to_100_hh","less_20_hh","more_500_hh"),
+                       tgt=c('175', '35', '375', '75', '10', '750'), default=NA, keep.na=T)
+locsp <- as.SpatialPointsDataFrame(loc)
+locppp <- as(locsp, "ppp")
+```
