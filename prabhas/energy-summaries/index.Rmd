@@ -11,7 +11,7 @@ mode        : selfcontained # {standalone, draft}
 
 ---
 
-```{r echo=FALSE, warning=FALSE, message=FALSE}
+```{r echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 setwd("~/Code/presentations/prabhas/energy-summaries/")
 source("../NigeriaPresentationUtils.R")
 # importing variables... this is how we have to do it sadly
@@ -30,14 +30,44 @@ stateCenters <- stateCenters
 
 ---
 
-## Coverage of localities survey
-```{r echo=FALSE, warning=FALSE, message=FALSE}
+## Coverage of localities survey (1)
+```{r echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 source("~/Code/formhub.R/R/formhub.R")
 library(doBy)
 loc <- formhubRead("data/Local_661_Merged.csv", "data/Localities_05_06_2012.json")
-loc$hhnum <- recodeVar(loc$households_number, 
-                       src=c("101_to_250_hh", "21_to_50_hh", "251_to_500_hh", "51_to_100_hh","less_20_hh","more_500_hh"),
-                       tgt=c('175', '35', '375', '75', '10', '750'), default=NA, keep.na=T)
 locsp <- as.SpatialPointsDataFrame(loc)
 locppp <- as(locsp, "ppp")
+
+loc <- rename(loc, c("X_lga_id" = "lga_id"))
+lgas <- read.csv("~/Dropbox/Nigeria/Nigeria 661 Baseline Data Cleaning/lgas.csv")
+loc <- merge(loc, lgas, by="lga_id")
+
+
+loc$hhnum <- as.numeric(recodeVar(as.character(loc$households_number), 
+                       src=c("101_to_250_hh", "21_to_50_hh", "251_to_500_hh", "51_to_100_hh","less_20_hh","more_500_hh"),
+                       tgt=c('175', '35', '375', '75', '10', '750'), default=NA, keep.na=T))
+library(ggplot2)
+ggplot(data=loc, aes(x=X_gps_longitude, y=X_gps_latitude)) + geom_point() + stat_density2d(aes(fill = ..level..), geom="polygon")
 ```
+
+---
+
+## Coverage of localities survey (2)
+Household aggregate -- taking the mid-points of the bin vs. population of LGA
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=8, fig.width=6, cache=TRUE}
+lgaloc <- ddply(idata.frame(loc), .(lga_id), function(df) {
+  data.frame(
+    lga_id = df[1,'lga_id'],
+    zone = df[1, 'zone'],
+    HouseholdAggregate = sum(df$hhnum, na.rm=T),
+    Population = df[1,'pop_2006'],
+    Density = df[1,'pop_density_2006']
+    )
+})
+ggplot(lgaloc, aes(y=Population, x=HouseholdAggregate)) + geom_point() + geom_abline(slope=6)
+```
+Line: 6 households / person. No correlation, even when separated by zone.
+
+---
+
+## 

@@ -1,3 +1,3 @@
-setwd("~/Code/Presentations/prabhas/kigali-mopup-presentation/")
+setwd("~/Code/Presentations/prabhas/energy-summaries/")
 library(slidify)
 slidify("index.Rmd")
