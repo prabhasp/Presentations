@@ -11,7 +11,7 @@ mode        : selfcontained # {standalone, draft}
 
 ---
 
-```{r echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 setwd("~/Code/presentations/prabhas/energy-summaries/")
 source("../NigeriaPresentationUtils.R")
 # importing variables... this is how we have to do it sadly
@@ -21,6 +21,10 @@ lga_map <- lga_map
 flipAndPrint <- flipAndPrint
 states <- states
 stateCenters <- stateCenters
+icount <- icount
+bool_proportion <- bool_proportion
+bool_proportion_string <- bool_proportion_string
+ratio <- ratio
 ```
 ## Outline
 1. Localities Survey, coverage
@@ -31,43 +35,122 @@ stateCenters <- stateCenters
 ---
 
 ## Coverage of localities survey (1)
-```{r echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
-source("~/Code/formhub.R/R/formhub.R")
+```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=12, cache=TRUE}
 library(doBy)
+source('~/Code/formhub.R/R/formhub.R')
 loc <- formhubRead("data/Local_661_Merged.csv", "data/Localities_05_06_2012.json")
 locsp <- as.SpatialPointsDataFrame(loc)
 locppp <- as(locsp, "ppp")
 
 loc <- rename(loc, c("X_lga_id" = "lga_id"))
-lgas <- read.csv("~/Dropbox/Nigeria/Nigeria 661 Baseline Data Cleaning/lgas.csv")
-loc <- merge(loc, lgas, by="lga_id")
+loc <- merge(loc, read.csv("~/Dropbox/Nigeria/Nigeria 661 Baseline Data Cleaning/lgas.csv"),
+             by="lga_id")
 
-
+loc$grid <- loc$grid_proximity=='connected_to_grid'
 loc$hhnum <- as.numeric(recodeVar(as.character(loc$households_number), 
                        src=c("101_to_250_hh", "21_to_50_hh", "251_to_500_hh", "51_to_100_hh","less_20_hh","more_500_hh"),
                        tgt=c('175', '35', '375', '75', '10', '750'), default=NA, keep.na=T))
 library(ggplot2)
-ggplot(data=loc, aes(x=X_gps_longitude, y=X_gps_latitude)) + geom_point() + stat_density2d(aes(fill = ..level..), geom="polygon")
+ggplot(data=loc, aes(x=X_gps_longitude, y=X_gps_latitude)) + geom_point() + stat_density2d(aes(fill = ..level.., alpha=0.2), geom="polygon")
 ```
 
 ---
 
 ## Coverage of localities survey (2)
 Household aggregate -- taking the mid-points of the bin vs. population of LGA
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=8, fig.width=6, cache=TRUE}
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
 lgaloc <- ddply(idata.frame(loc), .(lga_id), function(df) {
   data.frame(
     lga_id = df[1,'lga_id'],
+    lga = df[1, 'lga'],
+    state = df[1, 'state'],
     zone = df[1, 'zone'],
     HouseholdAggregate = sum(df$hhnum, na.rm=T),
     Population = df[1,'pop_2006'],
-    Density = df[1,'pop_density_2006']
+    Density = df[1,'pop_density_2006'],
+    GridPct = bool_proportion(df$grid_proximity=='connected_to_grid'),
+    MiniGridPct = bool_proportion_string(df$minigrid_availability_yn),
+    GridFunctional = bool_proportion_string(df$electric_grid_questions.grid_functional_yn),
+    MiniGridFunctional = bool_proportion_string(df$minigrid_questions.minigrid_functional_yn),
+    HHGridPct = ratio(ifelse(df$grid, df$hhnum, 0), df$hhnum)
     )
 })
-ggplot(lgaloc, aes(y=Population, x=HouseholdAggregate)) + geom_point() + geom_abline(slope=6)
+lga_map(geom_map(data = lgaloc, aes(map_id = lga_id, fill = Population/HouseholdAggregate < 10), map=lgas))
+ggplot(lgaloc, aes(y=Population, x=HouseholdAggregate, color=Population/HouseholdAggregate < 6)) + 
+  geom_point() + geom_abline(slope=6) + theme(legend.position="none") + labs(x="HouseholdAggregate\n(Line: 6 households / person. Points above imply higher number.")
 ```
-Line: 6 households / person. No correlation, even when separated by zone.
+CAVEAT TO THE REST OF THE PRESENTATION: BASED ON QUESTIONABLE COVERAGE.
 
 ---
 
-## 
+## What % of localities have grid?
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+lgaloc$GridPct.bin = cut(lgaloc$GridPct, breaks=c(0,.3,.6,.9,1), include.lowest=T, 
+                              labels=c("0-30%", "30-60%", "60-90%", "90% +"))
+ggplot(data=lgaloc, aes(x=zone, y=GridPct, fill=zone)) + geom_boxplot()
+lga_map(geom_map(data = lgaloc, aes(map_id = lga_id, fill = GridPct.bin), map=lgas))
+```
+
+---
+
+## What % of households have grid?
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+lgaloc$HHPct = cut(lgaloc$HHGridPct, breaks=c(0,.3,.6,.9,1), include.lowest=T, 
+                              labels=c("0-30%", "30-60%", "60-90%", "90% +"))
+ggplot(data=lgaloc, aes(x=zone, y=HHGridPct, fill=zone)) + geom_boxplot()
+lga_map(geom_map(data = lgaloc, aes(map_id = lga_id, fill = HHPct), map=lgas))
+
+```
+
+---
+
+## What % of localities say the grid is functional?
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+lgaloc$GridFct.bin = cut(lgaloc$GridFunctional, breaks=c(0,.3,.6,.9,1), include.lowest=T, 
+                              labels=c("0-30%", "30-60%", "60-90%", "90% +"))
+ggplot(data=lgaloc, aes(x=zone, y=GridFunctional, fill=zone)) + geom_boxplot()
+lga_map(geom_map(data = lgaloc, aes(map_id = lga_id, fill = GridFct.bin), map=lgas))
+```
+
+---
+
+## What is the major problem with the grid?
+Where do the majority say the issue is?
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+loc$grid_problem <- factor(recodeVar(as.character(loc$electric_grid_questions.grid_problem), src=c("multiple_probs_derelict", "new_not_turned_on", "probs_network_1km", "probs_power_supply", "probs_transformer_1km", "other"), tgt=c("Multiple", "New; Never turned on", "In Network (<1km)", "Supply", "Transformer", "Other"), default=NA))
+
+na_less_locs <- subset(loc, !is.na(loc$grid_problem))
+problem_summary <- ddply(idata.frame(na_less_locs), .(lga_id), function(df) {
+  data.frame(MajorGridProblem=df[which.max(df$grid_problem), 'grid_problem'],
+             zone=df[1,'zone']
+  )
+})
+
+ggplot(data=problem_summary, aes(x=zone, fill=MajorGridProblem)) + geom_bar()
+lga_map(geom_map(data = problem_summary, aes(map_id = lga_id, fill = MajorGridProblem), map=lgas), filltype="qual")
+```
+
+---
+
+## What % of localities have a mini-grid?
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+lgaloc$MiniGridPct.bin = cut(lgaloc$MiniGridPct, breaks=c(0,.3,.6,.9,1), include.lowest=T, 
+                              labels=c("0-30%", "30-60%", "60-90%", "90% +"))
+ggplot(data=lgaloc, aes(x=zone, y=MiniGridPct, fill=zone)) + geom_boxplot()
+lga_map(geom_map(data = lgaloc, aes(map_id = lga_id, fill = MiniGridPct.bin), map=lgas))
+```
+
+---
+## What % of mini-grids are functional?
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+lgaloc$MiniGridFct.bin = cut(lgaloc$MiniGridFunctional, breaks=c(0,.3,.6,.9,1), include.lowest=T, 
+                              labels=c("0-30%", "30-60%", "60-90%", "90% +"))
+ggplot(data=lgaloc, aes(x=zone, y=MiniGridFunctional, fill=zone)) + geom_boxplot()
+lga_map(geom_map(data = lgaloc, aes(map_id = lga_id, fill = MiniGridFct.bin), map=lgas))
+```
+
+---
