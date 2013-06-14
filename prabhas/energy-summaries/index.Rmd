@@ -11,7 +11,7 @@ mode        : selfcontained # {standalone, draft}
 
 ---
 
-```{r echo=FALSE, warning=FALSE, message=FALSE}
+```{r echo=FALSE, warning=FALSE, message=FALSE, cache=T}
 setwd("~/Code/presentations/prabhas/energy-summaries/")
 source("../NigeriaPresentationUtils.R")
 # importing variables... this is how we have to do it sadly
@@ -73,7 +73,8 @@ lgaloc <- ddply(idata.frame(loc), .(lga_id), function(df) {
     MiniGridPct = bool_proportion_string(df$minigrid_availability_yn),
     GridFunctional = bool_proportion_string(df$electric_grid_questions.grid_functional_yn),
     MiniGridFunctional = bool_proportion_string(df$minigrid_questions.minigrid_functional_yn),
-    HHGridPct = ratio(ifelse(df$grid, df$hhnum, 0), df$hhnum)
+    HHGridPct = ratio(ifelse(df$grid, df$hhnum, 0), df$hhnum),
+    IndividualSystems = bool_proportion_string(df$individual_electricity_systems_yn)
     )
 })
 lga_map(geom_map(data = lgaloc, aes(map_id = lga_id, fill = Population/HouseholdAggregate < 10), map=lgas))
@@ -88,7 +89,7 @@ CAVEAT TO THE REST OF THE PRESENTATION: BASED ON QUESTIONABLE COVERAGE.
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
 lgaloc$GridPct.bin = cut(lgaloc$GridPct, breaks=c(0,.3,.6,.9,1), include.lowest=T, 
                               labels=c("0-30%", "30-60%", "60-90%", "90% +"))
-ggplot(data=lgaloc, aes(x=zone, y=GridPct, fill=zone)) + geom_boxplot()
+ggplot(data=lgaloc, aes(x=zone, y=GridPct, fill=zone)) + geom_boxplot() + coord_flip()
 lga_map(geom_map(data = lgaloc, aes(map_id = lga_id, fill = GridPct.bin), map=lgas))
 ```
 
@@ -118,6 +119,7 @@ lga_map(geom_map(data = lgaloc, aes(map_id = lga_id, fill = GridFct.bin), map=lg
 
 ## What is the major problem with the grid?
 Where do the majority say the issue is?
+
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
 loc$grid_problem <- factor(recodeVar(as.character(loc$electric_grid_questions.grid_problem), src=c("multiple_probs_derelict", "new_not_turned_on", "probs_network_1km", "probs_power_supply", "probs_transformer_1km", "other"), tgt=c("Multiple", "New; Never turned on", "In Network (<1km)", "Supply", "Transformer", "Other"), default=NA))
 
@@ -128,7 +130,8 @@ problem_summary <- ddply(idata.frame(na_less_locs), .(lga_id), function(df) {
   )
 })
 
-ggplot(data=problem_summary, aes(x=zone, fill=MajorGridProblem)) + geom_bar()
+ggplot(data=problem_summary, aes(x=zone, fill=MajorGridProblem)) + geom_bar() +
+  scale_fill_brewer(type="qual", palette=2)
 lga_map(geom_map(data = problem_summary, aes(map_id = lga_id, fill = MajorGridProblem), map=lgas), filltype="qual")
 ```
 
@@ -144,12 +147,13 @@ lga_map(geom_map(data = lgaloc, aes(map_id = lga_id, fill = MiniGridPct.bin), ma
 ```
 
 ---
+
 ## What % of mini-grids are functional?
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
 lgaloc$MiniGridFct.bin = cut(lgaloc$MiniGridFunctional, breaks=c(0,.3,.6,.9,1), include.lowest=T, 
                               labels=c("0-30%", "30-60%", "60-90%", "90% +"))
-ggplot(data=lgaloc, aes(x=zone, y=MiniGridFunctional, fill=zone)) + geom_boxplot()
+ggplot(data=lgaloc, aes(x=zone, y=MiniGridFunctional, fill=zone)) + geom_boxplot() 
 lga_map(geom_map(data = lgaloc, aes(map_id = lga_id, fill = MiniGridFct.bin), map=lgas))
 ```
 
