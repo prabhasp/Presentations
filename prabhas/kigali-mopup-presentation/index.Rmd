@@ -100,9 +100,9 @@ In total, 92% of the facilities in baseline have been marked as either being a m
 
 ---
 ## Progress towards the matching exercise (2)
-Some LGAs have a high proportion of baseline facilities marked as not being a match.
+Proportion of baseline facilities that were not matched by LGA. (Total: 26533, ~30% of 93085)
 
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=13, cache=TRUE}
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=10, cache=TRUE}
   library(classInt)
   #brks <- classIntervals((matched$total_baseline - matched$left_baseline) / matched$total_baseline, n=5, style="fisher")$brks
   matched$UnmatchedRatio <- cut((matched$left_baseline) / matched$total_baseline, breaks=c(0,.3,.6,.9,1), include.lowest=T, 
@@ -154,7 +154,9 @@ Answer: No.
 
 ## Missing facilities across  Nigeria
 
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=8, fig.width=13, cache=TRUE}
+Total missing facilities: 67463, ~50% of facility list total (134015).
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=10, cache=TRUE}
 
   # add one more break at 50
   missing.breaks = c(0,50,100,200,1000)
