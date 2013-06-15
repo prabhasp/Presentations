@@ -33,15 +33,18 @@ state_overlay <- function() {
 }
 stateCenters <- state_overlay()
 
-lga_map = function(geom_map_thingy, filltype="seq") {
+lga_map = function(geom_map_thingy, filltype="seq", nostatenames=FALSE) {
+    
   ggplot() + geom_map_thingy + expand_limits(x=lgas$long, y=lgas$lat) +
     theme(axis.title=element_blank(), axis.text=element_blank(),
           axis.ticks = element_blank(), panel.grid=element_blank(), 
           panel.background=element_rect(fill='#888888'),
           legend.position = "bottom") +
-    geom_text(data=stateCenters, aes(x=x, y=y, label=STATE)) +
-    geom_map(data=states, aes(map_id=id), fill="transparent", color='#444444', map=states) +
-    scale_fill_brewer(type=filltype, palette=2)
+          scale_fill_brewer(type=filltype, palette=2) +
+          geom_map(data=states, aes(map_id=id), fill="transparent", color='#444444', map=states) +
+    if (!nostatenames) {
+      geom_text(data=stateCenters, aes(x=x, y=y, label=STATE))
+    }
 }
 
 ratioToPct <- function(numvec, round.digits=0) {
@@ -67,8 +70,10 @@ ratio <- function(numerator_col, denominator_col, filter=TRUE) {
   sum(df$num) / sum(df$den)
 }
 bool_proportion_string <- function(numerator_TF, denominator_TF="yes") {
-  numerator_TF <- as.logical(recodeVar(as.character(numerator_TF), src=c("yes", "no"), tgt=c(TRUE, FALSE)))
-  denominator_TF <- as.logical(recodeVar(as.character(denominator_TF), src=c("yes", "no"), tgt=c(TRUE, FALSE)))
+  if(!is.logical(numerator_TF))
+    numerator_TF <- as.logical(recodeVar(as.character(numerator_TF), src=c("yes", "no"), tgt=c(TRUE, FALSE)))
+  if(!is.logical(denominator_TF))
+    denominator_TF <- as.logical(recodeVar(as.character(denominator_TF), src=c("yes", "no"), tgt=c(TRUE, FALSE)))
   bool_proportion(numerator_TF, denominator_TF)
 }
 bool_proportion <- function(numerator_TF, denominator_TF=TRUE) {

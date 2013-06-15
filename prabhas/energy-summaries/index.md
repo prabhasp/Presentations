@@ -14,25 +14,19 @@ mode        : selfcontained # {standalone, draft}
 
 
 ## Outline
-1. Localities Survey, coverage
-2. Other surveys, what data is included
-3. LGA wides summaries of data
-4. Katsina -- 4 LGA example of detailed demand analysis
+1. Grid data from localities survey
+2. Grid vs. solar vs. generator data from health + education surveys
+3. Katsina -- example of detailed demand analysis
 
 ---
 
-## Coverage of localities survey (1)
+## Localities survey -- orientation
 ![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
 
 
----
 
-## Coverage of localities survey (2)
-Household aggregate -- taking the mid-points of the bin vs. population of LGA
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-31.png) ![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-32.png) 
 
-CAVEAT TO THE REST OF THE PRESENTATION: BASED ON QUESTIONABLE COVERAGE.
 
 ---
 
@@ -56,23 +50,75 @@ CAVEAT TO THE REST OF THE PRESENTATION: BASED ON QUESTIONABLE COVERAGE.
 ---
 
 ## What is the major problem with the grid?
-Where do the majority say the issue is?
+Left: issues by locality, by zone. Right: Majority problem for LGA.
 
 ![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-71.png) ![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-72.png) 
 
 
 ---
 
-## What % of localities have a mini-grid?
+## Do housholds employ back-up or "individual home" systems?
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-81.png) ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-82.png) 
 
 
 ---
 
-## What % of mini-grids are functional?
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-91.png) ![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-92.png) 
+## Systems of energy use in health and education facilities
+
+
+```
+Error: internal error -3 in R_decompress1
+```
+
+```
+Error: internal error -3 in R_decompress1
+```
+
+```
+Error: internal error -3 in R_decompress1
+```
+
+```
+Error: internal error -3 in R_decompress1
+```
+
+```
+Error: internal error -3 in R_decompress1
+```
+
+```
+Error: internal error -3 in R_decompress1
+```
 
 
 ---
+
+## What is functional?
+
+
+```
+Error: internal error -3 in R_decompress1
+```
+
+```
+Error: internal error -3 in R_decompress1
+```
+
+```
+Error: internal error -3 in R_decompress1
+```
+
+```
+Error: internal error -3 in R_decompress1
+```
+
+```
+Error: internal error -3 in R_decompress1
+```
+
+```
+Error: internal error -3 in R_decompress1
+```
+
