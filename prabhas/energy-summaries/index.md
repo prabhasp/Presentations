@@ -20,7 +20,7 @@ mode        : selfcontained # {standalone, draft}
 
 ---
 
-## Localities survey -- orientation
+## Localities survey -- landscape of the data
 ![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
 
 
@@ -52,73 +52,51 @@ mode        : selfcontained # {standalone, draft}
 ## What is the major problem with the grid?
 Left: issues by locality, by zone. Right: Majority problem for LGA.
 
+
+```
+Error: object 'bar' not found
+```
+
 ![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-71.png) ![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-72.png) 
 
 
 ---
 
-## Do housholds employ back-up or "individual home" systems?
+## Use of back-up / "individual home" systems 
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-81.png) ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-82.png) 
 
 
 ---
 
+## 2. Surveys at Health and Education Facilities
 
-## Systems of energy use in health and education facilities
 
 
-```
-Error: internal error -3 in R_decompress1
-```
+---
 
-```
-Error: internal error -3 in R_decompress1
-```
+## What % use ...
 
-```
-Error: internal error -3 in R_decompress1
-```
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-101.png) ![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-102.png) ![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-103.png) ![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-104.png) ![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-105.png) ![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-106.png) 
 
-```
-Error: internal error -3 in R_decompress1
-```
 
-```
-Error: internal error -3 in R_decompress1
-```
+---
 
-```
-Error: internal error -3 in R_decompress1
-```
+## Which electric system is dominant?
 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-111.png) ![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-112.png) 
 
 ---
 
 ## What is functional?
 
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-121.png) ![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-122.png) ![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-123.png) ![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-124.png) ![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-125.png) ![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-126.png) 
 
-```
-Error: internal error -3 in R_decompress1
-```
 
-```
-Error: internal error -3 in R_decompress1
-```
+---
 
-```
-Error: internal error -3 in R_decompress1
-```
+## Functional Power
 
-```
-Error: internal error -3 in R_decompress1
-```
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-131.png) ![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-132.png) ![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-133.png) ![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-134.png) 
 
-```
-Error: internal error -3 in R_decompress1
-```
-
-```
-Error: internal error -3 in R_decompress1
-```
 

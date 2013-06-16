@@ -25,18 +25,28 @@ icount <- icount
 bool_proportion <- bool_proportion
 bool_proportion_string <- bool_proportion_string
 ratio <- ratio
-jenks_bin_and_map <- function(df, colname) {
+jenks_bin_and_map <- function(df, colname, ...) {
   library(classInt)
   breaks <- classIntervals(df[,colname], n=5, style="fisher", dataPrecision=0,)
-  bin_and_map(df, colname, breaks=breaks$brks, labels=levels(cut(df[,colname], breaks$brks)))
+  bin_and_map(df, colname, breaks=breaks$brks, labels=levels(cut(df[,colname], breaks$brks)), ...)
 }
-bin_and_map <- function(df, colname, breaks=c(0,.3,.6,.9,1), labels=c("0-30%", "30-60%", "60-90%", "90% +"), nostatename=FALSE) {
+bin_and_map <- function(df, colname, breaks=c(0,.3,.6,.9,1), labels=c("0-30%", "30-60%", "60-90%", "90% +"), nostatename=FALSE, title=NA) {
   binname <- paste(colname,'bin',sep='.')
   df[,binname] <- cut(df[,colname], breaks=breaks, include.lowest=T, labels=labels)
-  lga_map(geom_map(data=df, aes_string(map_id='lga_id', fill=binname), map=lgas), nostatenames=nostatename)
+  lga_map(geom_map(data=df, aes_string(map_id='lga_id', fill=binname), map=lgas), nostatenames=nostatename) + labs(title=ifelse(is.na(title), colname, title))
 }
-boxplot_by_zone <- function(df, colname, zonecolname='zone') {
-  ggplot(data=df, aes_string(x=zonecolname, y=colname, fill=zonecolname)) + geom_boxplot()  
+# TODO: Abstract the two functions below out
+boxplot_by_zone <- function(df, colname, zonecolname='zone', title=NA) {
+    ggplot(data=df, aes_string(x=zonecolname, y=colname, fill=zonecolname)) + 
+    geom_boxplot(width=0.15, outlier.colour=NA) +
+    geom_violin(alpha=0.3, width=0.5, aes_string(color=zonecolname)) +
+        labs(title=ifelse(is.na(title), colname, title)) + 
+        theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title=element_blank(), legend.position='none')
+}
+barplot_by_zone <- function(df, colname, zonecolname='zone', title=NA) {
+    ggplot(data=df, aes_string(x=zonecolname, fill=colname)) + geom_bar()   +
+        labs(title=ifelse(is.na(title), colname, title)) + 
+        theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title=element_blank()) + scale_fill_brewer(type="qual", palette=2)
 }
 ```
 ## Outline
@@ -46,7 +56,7 @@ boxplot_by_zone <- function(df, colname, zonecolname='zone') {
 
 ---
 
-## Localities survey -- orientation
+## Localities survey -- landscape of the data
 ```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=12, cache=TRUE}
 library(doBy)
 source('~/Code/formhub.R/R/formhub.R')
@@ -121,14 +131,16 @@ problem_summary <- ddply(idata.frame(na_less_locs), .(lga_id), function(df) {
              zone=df[1,'zone']
   )
 })
+bar
 ggplot(data=problem_summary, aes(x=zone, fill=MajorGridProblem)) + geom_bar() +
-  scale_fill_brewer(type="qual", palette=2)
+  scale_fill_brewer(type="qual", palette=2) + 
+  coord_flip() + theme(legend.position='none')
 lga_map(geom_map(data = problem_summary, aes(map_id = lga_id, fill = MajorGridProblem), map=lgas), filltype="qual")
 ```
 
 ---
 
-## Do housholds employ back-up or "individual home" systems?
+## Use of back-up / "individual home" systems 
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
 bin_and_map(lgaloc, 'IndividualSystems')
@@ -136,6 +148,9 @@ boxplot_by_zone(lgaloc, 'IndividualSystems')
 ```
 
 ---
+
+## 2. Surveys at Health and Education Facilities
+
 ```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=12, cache=TRUE}
 fac <- rbind(read.csv('data/EducationElectricityData.csv', na.strings=c("n/a","NA")),
              read.csv('data/HealthElectricityData.csv', na.strings=c("n/a","NA")))
@@ -145,12 +160,12 @@ facagg <- ddply(idata.frame(fac), .(lga_id), function(df) {
     HealthFacilities = icount(df$sector=="HEALTH"),
     EduFacilities = icount(df$sector=="EDUCATION"),
     ALLFAcilities = nrow(df),
-    HealthFunctionalPower = bool_proportion(df$functional_power, df$sector=="HEALTH"),
-    EducationFunctionalPower = bool_proportion(df$functional_power, df$sector=="EDUCATION"),
-    FunctionalPower = bool_proportion(df$functional_power),
-    HasGrid = bool_proportion(df$grid),
-    HasSolar = bool_proportion(df$solar),
-    HasGenerator = bool_proportion(df$genset),
+    FunctionalPower_Health = bool_proportion(df$functional_power, df$sector=="HEALTH"),
+    FunctionalPower_Education = bool_proportion(df$functional_power, df$sector=="EDUCATION"),
+    FunctionalPower_Overall = bool_proportion(df$functional_power),
+    Grid = bool_proportion(df$grid),
+    Solar = bool_proportion(df$solar),
+    Generator = bool_proportion(df$genset),
     GridFunctional = bool_proportion(df$grid_functional=='yes', df$grid),
     SolarFunctional = bool_proportion(df$solar_functional=='yes', df$solar),
     GeneratorFunctional = bool_proportion(df$generator_functional=='yes', df$genset)
@@ -159,22 +174,48 @@ facagg <- ddply(idata.frame(fac), .(lga_id), function(df) {
 lgaas <- read.csv('~/Dropbox/Nigeria/Nigeria 661 Baseline Data Cleaning/lgas.csv')
 facagg <- merge(facagg, lgaas, by="lga_id")
 ```
-## Systems of energy use in health and education facilities
+---
 
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=4}
-boxplot_by_zone(facagg, 'HasGrid')
-boxplot_by_zone(facagg, 'HasGenerator')
-boxplot_by_zone(facagg, 'HasSolar')
-bin_and_map(facagg, 'HasGrid', nostatename=TRUE)
-bin_and_map(facagg, 'HasGenerator', nostatename=TRUE)
-bin_and_map(facagg, 'HasSolar', nostatename=TRUE)
+## What % use ...
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=4, cache=TRUE}
+boxplot_by_zone(facagg, 'Grid')
+boxplot_by_zone(facagg, 'Generator')
+boxplot_by_zone(facagg, 'Solar')
+bin_and_map(facagg, 'Grid', nostatename=TRUE)
+bin_and_map(facagg, 'Generator', nostatename=TRUE)
+bin_and_map(facagg, 'Solar', nostatename=TRUE)
 ```
 
 ---
 
+## Which electric system is dominant?
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+g <- replace(facagg$Grid, is.na(facagg$Grid), 0)
+s <- replace(facagg$Solar, is.na(facagg$Solar), 0)
+n <- replace(facagg$Generator, is.na(facagg$Generator), 0)
+gt <- (function(eps) { function(a, b) { (a - b) > eps }}) (.1)
+
+facagg$DominantElectricSystem <- 
+  ifelse(gt(g,s) & gt(g,n),'GRID',
+  ifelse(gt(n,s) & gt(n,g), 'GEN',
+  ifelse(gt(s,n) & gt(s,g),'SOLAR',
+  # no dominance
+  ifelse(gt(s,n) & gt(g,n), 'GRID | SOLAR',
+  ifelse(gt(g,s) & gt(n,s), 'GEN | GRID',
+  ifelse(gt(n,g) & gt(s,g), 'SOLAR | GEN',
+         'No dominance'))))))
+  
+ggplot(data=facagg, aes(x=zone, fill=DominantElectricSystem)) + geom_bar() +
+  scale_fill_brewer(type="qual", palette=2) 
+lga_map(geom_map(data = facagg, aes(map_id = lga_id, fill = DominantElectricSystem), map=lgas), filltype="qual") + labs(tile="DominantElectricSystem")
+```
+---
+
 ## What is functional?
 
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=4}
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=4, cache=TRUE}
 
 boxplot_by_zone(facagg, 'GridFunctional')
 boxplot_by_zone(facagg, 'GeneratorFunctional')
@@ -183,3 +224,15 @@ bin_and_map(facagg, 'GridFunctional', nostatename=TRUE)
 bin_and_map(facagg, 'SolarFunctional', nostatename=TRUE)
 bin_and_map(facagg, 'GeneratorFunctional', nostatename=TRUE)
 ```
+
+---
+
+## Functional Power
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=6, cache=TRUE}
+boxplot_by_zone(facagg, 'FunctionalPower_Health')
+boxplot_by_zone(facagg, 'FunctionalPower_Education')
+bin_and_map(facagg, 'FunctionalPower_Health', nostatename=TRUE)
+bin_and_map(facagg, 'FunctionalPower_Education', nostatename=TRUE)
+```
+

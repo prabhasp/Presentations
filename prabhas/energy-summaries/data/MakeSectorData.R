@@ -14,6 +14,7 @@ ep[,c('power_access', 'generator_funct_yn', 'solar_funct_yn', 'grid_funct_yn')] 
 ep <- subset(ep, select=c("X_lga_id", "power_access",
                           "power_grid_connection", "power_generator", "power_solar_system",
                           "generator_funct_yn", "solar_funct_yn", "grid_funct_yn"))
+ep$gps_lat <- str_extract()
 ### WARNING: MAKE SURE ORDER IS THE SAME!
 std_names <- c("lga_id", "functional_power", "grid", "genset", "solar",
                "generator_functional", "solar_functional", "grid_functional")
