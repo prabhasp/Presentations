@@ -11,43 +11,9 @@ mode        : selfcontained # {standalone, draft}
 
 ---
 
-```{r echo=FALSE, warning=FALSE, message=FALSE, cache=T}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 setwd("~/Code/presentations/prabhas/energy-summaries/")
-source("../NigeriaPresentationUtils.R")
-# importing variables... this is how we have to do it sadly
-lgas <- lgas
-lgashp <- lgashp
-lga_map <- lga_map
-flipAndPrint <- flipAndPrint
-states <- states
-stateCenters <- stateCenters
-icount <- icount
-bool_proportion <- bool_proportion
-bool_proportion_string <- bool_proportion_string
-ratio <- ratio
-jenks_bin_and_map <- function(df, colname, ...) {
-  library(classInt)
-  breaks <- classIntervals(df[,colname], n=5, style="fisher", dataPrecision=0,)
-  bin_and_map(df, colname, breaks=breaks$brks, labels=levels(cut(df[,colname], breaks$brks)), ...)
-}
-bin_and_map <- function(df, colname, breaks=c(0,.3,.6,.9,1), labels=c("0-30%", "30-60%", "60-90%", "90% +"), nostatename=FALSE, title=NA) {
-  binname <- paste(colname,'bin',sep='.')
-  df[,binname] <- cut(df[,colname], breaks=breaks, include.lowest=T, labels=labels)
-  lga_map(geom_map(data=df, aes_string(map_id='lga_id', fill=binname), map=lgas), nostatenames=nostatename) + labs(title=ifelse(is.na(title), colname, title))
-}
-# TODO: Abstract the two functions below out
-boxplot_by_zone <- function(df, colname, zonecolname='zone', title=NA) {
-    ggplot(data=df, aes_string(x=zonecolname, y=colname, fill=zonecolname)) + 
-    geom_boxplot(width=0.15, outlier.colour=NA) +
-    geom_violin(alpha=0.3, width=0.5, aes_string(color=zonecolname)) +
-        labs(title=ifelse(is.na(title), colname, title)) + 
-        theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title=element_blank(), legend.position='none')
-}
-barplot_by_zone <- function(df, colname, zonecolname='zone', title=NA) {
-    ggplot(data=df, aes_string(x=zonecolname, fill=colname)) + geom_bar()   +
-        labs(title=ifelse(is.na(title), colname, title)) + 
-        theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title=element_blank()) + scale_fill_brewer(type="qual", palette=2)
-}
+load('../NigeriaPresentationUtils.RData')
 ```
 ## Outline
 1. Grid data from localities survey
@@ -56,7 +22,10 @@ barplot_by_zone <- function(df, colname, zonecolname='zone', title=NA) {
 
 ---
 
-## Localities survey -- landscape of the data
+## 1. Localities survey
+
+Total: 23,000+ localities in 654 LGAs. Heatmap of where localities were surveyed:
+
 ```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=12, cache=TRUE}
 library(doBy)
 source('~/Code/formhub.R/R/formhub.R')
@@ -71,8 +40,11 @@ loc$hhnum <- as.numeric(recodeVar(as.character(loc$households_number),
                        src=c("101_to_250_hh", "21_to_50_hh", "251_to_500_hh", "51_to_100_hh","less_20_hh","more_500_hh"),
                        tgt=c('175', '35', '375', '75', '10', '750'), default=NA, keep.na=T))
 library(ggplot2)
-ggplot(data=loc, aes(x=X_gps_longitude, y=X_gps_latitude)) + geom_point() + stat_density2d(aes(fill = ..level.., alpha=0.2), geom="polygon")
+ggplot(data=loc, aes(x=X_gps_longitude, y=X_gps_latitude)) + geom_point() + stat_density2d(aes(fill = ..level.., alpha=0.2), geom="polygon") +
+  theme(axis.title=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), 
+        panel.grid=element_blank(), panel.background=element_rect(fill='#888888'), legend.position = "none")
 ```
+
 
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
@@ -123,19 +95,19 @@ bin_and_map(lgaloc, 'GridFunctional')
 ## What is the major problem with the grid?
 Left: issues by locality, by zone. Right: Majority problem for LGA.
 
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+Grey = Less than 3 localities responded with a reason. Data subset from 971 localities in 145 LGAs.
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=5.5, fig.width=6, cache=TRUE}
 loc$grid_problem <- factor(recodeVar(as.character(loc$electric_grid_questions.grid_problem), src=c("multiple_probs_derelict", "new_not_turned_on", "probs_network_1km", "probs_power_supply", "probs_transformer_1km", "other"), tgt=c("Multiple", "New; Never turned on", "In Network (<1km)", "Supply", "Transformer", "Other"), default=NA))
 na_less_locs <- subset(loc, !is.na(loc$grid_problem))
-problem_summary <- ddply(idata.frame(na_less_locs), .(lga_id), function(df) {
-  data.frame(MajorGridProblem=df[which.max(df$grid_problem), 'grid_problem'],
+problem_summary <- subset(ddply(idata.frame(na_less_locs), .(lga_id), function(df) {
+  data.frame(MajorGridProblem= if(nrow(df) > 2) {df[which.max(df$grid_problem), 'grid_problem']} else {'NA'},
+             lga_id = df[1,'lga_id'],
              zone=df[1,'zone']
   )
-})
-bar
-ggplot(data=problem_summary, aes(x=zone, fill=MajorGridProblem)) + geom_bar() +
-  scale_fill_brewer(type="qual", palette=2) + 
-  coord_flip() + theme(legend.position='none')
-lga_map(geom_map(data = problem_summary, aes(map_id = lga_id, fill = MajorGridProblem), map=lgas), filltype="qual")
+}), MajorGridProblem != 'NA')
+barplot_by_zone(problem_summary, 'MajorGridProblem')
+lga_map(geom_map(data = problem_summary, aes(map_id = lga_id, fill = MajorGridProblem), map=lgas), filltype="qual") + theme(legend.position='none')
 ```
 
 ---
@@ -150,10 +122,19 @@ boxplot_by_zone(lgaloc, 'IndividualSystems')
 ---
 
 ## 2. Surveys at Health and Education Facilities
+<font color="#00BFC4">Education</font> -- 69,000+ facilities, <font color="#F8766D">Health</font> -- 24,00+ facilities, across 768 LGAs.
 
 ```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=12, cache=TRUE}
 fac <- rbind(read.csv('data/EducationElectricityData.csv', na.strings=c("n/a","NA")),
              read.csv('data/HealthElectricityData.csv', na.strings=c("n/a","NA")))
+ggplot(data=fac, aes(x=long, y=lat, color=sector, alpha=0.5)) + geom_point() + 
+  xlim(2.6,14.7) + ylim(4.2,13.9) + scale_color_manual(values=c('#00BFC4', '#F8766D')) +
+  theme(axis.title=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), 
+        panel.grid=element_blank(), panel.background=element_rect(fill='#888888'),
+          legend.position = "none")
+#+ stat_density2d(aes(fill = ..level.., alpha=0.2), geom="polygon")
+```
+```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=12, cache=TRUE}
 facagg <- ddply(idata.frame(fac), .(lga_id), function(df) {
   data.frame(
     lga_id = df[1,'lga_id'],
@@ -207,9 +188,8 @@ facagg$DominantElectricSystem <-
   ifelse(gt(n,g) & gt(s,g), 'SOLAR | GEN',
          'No dominance'))))))
   
-ggplot(data=facagg, aes(x=zone, fill=DominantElectricSystem)) + geom_bar() +
-  scale_fill_brewer(type="qual", palette=2) 
-lga_map(geom_map(data = facagg, aes(map_id = lga_id, fill = DominantElectricSystem), map=lgas), filltype="qual") + labs(tile="DominantElectricSystem")
+barplot_by_zone(facagg, 'DominantElectricSystem') 
+lga_map(geom_map(data = facagg, aes(map_id = lga_id, fill = DominantElectricSystem), map=lgas), filltype="qual") + theme(legend.position='none')
 ```
 ---
 
@@ -221,8 +201,9 @@ boxplot_by_zone(facagg, 'GridFunctional')
 boxplot_by_zone(facagg, 'GeneratorFunctional')
 boxplot_by_zone(facagg, 'SolarFunctional')
 bin_and_map(facagg, 'GridFunctional', nostatename=TRUE)
-bin_and_map(facagg, 'SolarFunctional', nostatename=TRUE)
 bin_and_map(facagg, 'GeneratorFunctional', nostatename=TRUE)
+bin_and_map(facagg, 'SolarFunctional', nostatename=TRUE)
+
 ```
 
 ---

@@ -5,8 +5,6 @@ library(plyr)
 library(ggplot2)
 library(scales)
 
-# ONLY FUNCTIONS IN THIS FILE... OTHERWISE IT LEADS SLOW
-
 lganamesdump = function(df1, lgacolname="lga", statecolname="state") {
   d_ply(df1, c(statecolname), function (df) {
     print(strwrap(str_c(toupper(df[1,statecolname]), ": ", 
@@ -82,3 +80,28 @@ bool_proportion <- function(numerator_TF, denominator_TF=TRUE) {
   icount((df$num & df$den)) / icount((df$den))
 }
 to_pct <- function(a) { a * 100 }
+
+jenks_bin_and_map <- function(df, colname, ...) {
+  library(classInt)
+  breaks <- classIntervals(df[,colname], n=5, style="fisher", dataPrecision=0,)
+  bin_and_map(df, colname, breaks=breaks$brks, labels=levels(cut(df[,colname], breaks$brks)), ...)
+}
+bin_and_map <- function(df, colname, breaks=c(0,.3,.6,.9,1), labels=c("0-30%", "30-60%", "60-90%", "90% +"), nostatename=FALSE, title=NA) {
+  binname <- paste(colname,'bin',sep='.')
+  df[,binname] <- cut(df[,colname], breaks=breaks, include.lowest=T, labels=labels)
+  lga_map(geom_map(data=df, aes_string(map_id='lga_id', fill=binname), map=lgas), nostatenames=nostatename) + labs(title=ifelse(is.na(title), colname, title))
+}
+# TODO: Abstract the two functions below out
+boxplot_by_zone <- function(df, colname, zonecolname='zone', title=NA) {
+  ggplot(data=df, aes_string(x=zonecolname, y=colname, fill=zonecolname)) + 
+    geom_boxplot(outlier.size=1) +
+    labs(title=ifelse(is.na(title), colname, title)) + 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title=element_blank(), legend.position='none')
+}
+barplot_by_zone <- function(df, colname, zonecolname='zone', title=NA) {
+  ggplot(data=df, aes_string(x=zonecolname, fill=colname)) + geom_bar()   +
+    labs(title=ifelse(is.na(title), colname, title)) + 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title=element_blank()) + scale_fill_brewer(type="qual", palette=2)
+}
+
+save.image(file="~/Code/presentations/prabhas/NigeriaPresentationUtils.RData")
