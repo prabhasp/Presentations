@@ -9,3 +9,7 @@
 .*.swp
 
 _site
+cache
+*.csv
+*.json
+*.RData
