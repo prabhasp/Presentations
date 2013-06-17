@@ -73,7 +73,7 @@ lgaloc <- ddply(idata.frame(loc), .(lga_id), function(df) {
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=4.5, fig.width=5, cache=TRUE}
 boxplot_by_zone(lgaloc, 'GridPct')
-bin_and_map(lgaloc, 'GridPct')
+bin_and_map(lgaloc, 'GridPct', nostatename=TRUE)
 ```
 
 <i> Throughout this presentation, we aggregate data at the LGA level to calculate a percentage of localities, such as percentage of localities with grid. The map (on the right) aggregates these into groups and plots the colors based on group; the greener the color, higher the percentage. The boxplot (on the left) shows the range of the value across LGAs in a zone. The box shows LGAs between 25th and 75th percentile, ie, the "middle 50%" of the LGAs in that zone. The center line is the median LGA, and any LGAs represented as dots are outliers.</i>
