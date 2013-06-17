@@ -94,14 +94,14 @@ bin_and_map <- function(df, colname, breaks=c(0,.3,.6,.9,1), labels=c("0-30%", "
 # TODO: Abstract the two functions below out
 boxplot_by_zone <- function(df, colname, zonecolname='zone', title=NA) {
   ggplot(data=df, aes_string(x=zonecolname, y=colname, fill=zonecolname)) + 
-    geom_boxplot(outlier.size=1) +
+    geom_boxplot(outlier.size=1) + scale_y_continuous(labels=percent_format()) +
     labs(title=ifelse(is.na(title), colname, title)) + 
     theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title=element_blank(), legend.position='none')
 }
 barplot_by_zone <- function(df, colname, zonecolname='zone', title=NA) {
   ggplot(data=df, aes_string(x=zonecolname, fill=colname)) + geom_bar()   +
-    labs(title=ifelse(is.na(title), colname, title)) + 
-    theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title=element_blank()) + scale_fill_brewer(type="qual", palette=2)
+    labs(title=ifelse(is.na(title), colname, title))  +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title.x=element_blank()) + scale_fill_brewer(type="qual", palette=2)
 }
 
 save.image(file="~/Code/presentations/prabhas/NigeriaPresentationUtils.RData")

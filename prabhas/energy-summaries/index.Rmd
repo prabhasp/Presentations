@@ -14,6 +14,8 @@ mode        : selfcontained # {standalone, draft}
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 setwd("~/Code/presentations/prabhas/energy-summaries/")
 load('../NigeriaPresentationUtils.RData')
+library(ggplot2)
+library(scales)
 ```
 ## Outline
 1. Grid data from localities survey
@@ -39,7 +41,7 @@ loc$grid <- loc$grid_proximity=='connected_to_grid'
 loc$hhnum <- as.numeric(recodeVar(as.character(loc$households_number), 
                        src=c("101_to_250_hh", "21_to_50_hh", "251_to_500_hh", "51_to_100_hh","less_20_hh","more_500_hh"),
                        tgt=c('175', '35', '375', '75', '10', '750'), default=NA, keep.na=T))
-library(ggplot2)
+
 ggplot(data=loc, aes(x=X_gps_longitude, y=X_gps_latitude)) + geom_point() + stat_density2d(aes(fill = ..level.., alpha=0.2), geom="polygon") +
   theme(axis.title=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), 
         panel.grid=element_blank(), panel.background=element_rect(fill='#888888'), legend.position = "none")
@@ -68,10 +70,13 @@ lgaloc <- ddply(idata.frame(loc), .(lga_id), function(df) {
 ---
 
 ## What % of localities have grid?
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=4.5, fig.width=5, cache=TRUE}
 boxplot_by_zone(lgaloc, 'GridPct')
 bin_and_map(lgaloc, 'GridPct')
 ```
+
+<i> Throughout this presentation, we aggregate data at the LGA level to calculate a percentage of localities, such as percentage of localities with grid. The map (on the right) aggregates these into groups and plots the colors based on group; the greener the color, higher the percentage. The boxplot (on the left) shows the range of the value across LGAs in a zone. The box shows LGAs between 25th and 75th percentile, ie, the "middle 50%" of the LGAs in that zone. The center line is the median LGA, and any LGAs represented as dots are outliers.</i>
 
 ---
 
@@ -90,12 +95,13 @@ boxplot_by_zone(lgaloc, 'GridFunctional')
 bin_and_map(lgaloc, 'GridFunctional')
 ```
 
+Denominator: localities with grid. Numerator: localities which say the grid is functional.
+
 ---
 
 ## What is the major problem with the grid?
-Left: issues by locality, by zone. Right: Majority problem for LGA.
-
-Grey = Less than 3 localities responded with a reason. Data subset from 971 localities in 145 LGAs.
+This map takes the problem that is reported by most localities in LGAs as the reason for not getting enough electricity. Values are only used for LGAs in which more than two localities responded with a reason grid doesn't function in their LGA. Data represents 971 localities in 145 LGAs.
+Color: problem reported by the highest number of localities in an LGA.
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=5.5, fig.width=6, cache=TRUE}
 loc$grid_problem <- factor(recodeVar(as.character(loc$electric_grid_questions.grid_problem), src=c("multiple_probs_derelict", "new_not_turned_on", "probs_network_1km", "probs_power_supply", "probs_transformer_1km", "other"), tgt=c("Multiple", "New; Never turned on", "In Network (<1km)", "Supply", "Transformer", "Other"), default=NA))
@@ -106,7 +112,11 @@ problem_summary <- subset(ddply(idata.frame(na_less_locs), .(lga_id), function(d
              zone=df[1,'zone']
   )
 }), MajorGridProblem != 'NA')
-barplot_by_zone(problem_summary, 'MajorGridProblem')
+barplot_by_zone <- function(df, colname, zonecolname='zone', title=NA) {
+  ggplot(data=df, aes_string(x=zonecolname, fill=colname)) + geom_bar()   +
+    labs(title=ifelse(is.na(title), colname, title)) + 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title.x=element_blank()) + scale_fill_brewer(type="qual", palette=2)
+}; barplot_by_zone(problem_summary, 'MajorGridProblem') + ylab("Number of LGAs in zone,\nin which given problem is reported by most localities.")
 lga_map(geom_map(data = problem_summary, aes(map_id = lga_id, fill = MajorGridProblem), map=lgas), filltype="qual") + theme(legend.position='none')
 ```
 
@@ -115,8 +125,8 @@ lga_map(geom_map(data = problem_summary, aes(map_id = lga_id, fill = MajorGridPr
 ## Use of back-up / "individual home" systems 
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
-bin_and_map(lgaloc, 'IndividualSystems')
 boxplot_by_zone(lgaloc, 'IndividualSystems')
+bin_and_map(lgaloc, 'IndividualSystems')
 ```
 
 ---
@@ -188,7 +198,7 @@ facagg$DominantElectricSystem <-
   ifelse(gt(n,g) & gt(s,g), 'SOLAR | GEN',
          'No dominance'))))))
   
-barplot_by_zone(facagg, 'DominantElectricSystem') 
+barplot_by_zone(facagg, 'DominantElectricSystem')  + labs(y="Number of LGAs in this zone with dominant system")
 lga_map(geom_map(data = facagg, aes(map_id = lga_id, fill = DominantElectricSystem), map=lgas), filltype="qual") + theme(legend.position='none')
 ```
 ---
@@ -208,12 +218,24 @@ bin_and_map(facagg, 'SolarFunctional', nostatename=TRUE)
 
 ---
 
-## Functional Power
+## Functional Power in Health Facilities
 
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=6, cache=TRUE}
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
 boxplot_by_zone(facagg, 'FunctionalPower_Health')
-boxplot_by_zone(facagg, 'FunctionalPower_Education')
 bin_and_map(facagg, 'FunctionalPower_Health', nostatename=TRUE)
+```
+Denominator: all health facilities in LGA.
+
+---
+
+## Functional Power in Schools
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+boxplot_by_zone(facagg, 'FunctionalPower_Education')
 bin_and_map(facagg, 'FunctionalPower_Education', nostatename=TRUE)
 ```
+Denominator: all schools in LGA.
 
+---
+
+## 3. 
