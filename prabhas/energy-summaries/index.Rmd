@@ -44,10 +44,10 @@ loc$hhnum <- as.numeric(recodeVar(as.character(loc$households_number),
 
 ggplot(data=loc, aes(x=X_gps_longitude, y=X_gps_latitude)) + geom_point() + stat_density2d(aes(fill = ..level.., alpha=0.2), geom="polygon") +
   theme(axis.title=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), 
-        panel.grid=element_blank(), panel.background=element_rect(fill='#888888'), legend.position = "none")
+        panel.grid=element_blank(), panel.background=element_rect(fill='#cccccc'), legend.position = "none") +
+  geom_map(data=states, aes(map_id=id, x=long, y=lat), fill="transparent", color='#444444', map=states) +
+  geom_text(data=stateCenters, aes(x=x, y=y, label=STATE))
 ```
-
-
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
 lgaloc <- ddply(idata.frame(loc), .(lga_id), function(df) {
@@ -86,6 +86,8 @@ boxplot_by_zone(lgaloc, 'HHGridPct')
 bin_and_map(lgaloc, 'HHGridPct')
 ```
 
+Household numbers derived from household-number bins of  _Less than 20_, _21 to 50_, _51 to 100_, _101 to 250_, _251 to 500_ and _More than 500_ as reported by locality residents.
+
 ---
 
 ## What % of localities say the grid is functional?
@@ -100,7 +102,7 @@ Denominator: localities with grid. Numerator: localities which say the grid is f
 ---
 
 ## What is the major problem with the grid?
-This map takes the problem that is reported by most localities in LGAs as the reason for not getting enough electricity. Values are only used for LGAs in which more than two localities responded with a reason grid doesn't function in their LGA. Data represents 971 localities in 145 LGAs.
+This map takes the problem that is reported by most localities in LGAs as the reason for a disfunctional grid. Values are only used for LGAs in which more than two localities responded with a reason grid doesn't function in their LGA. Data represents 971 localities in 145 LGAs.
 Color: problem reported by the highest number of localities in an LGA.
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=5.5, fig.width=6, cache=TRUE}
@@ -137,12 +139,14 @@ bin_and_map(lgaloc, 'IndividualSystems')
 ```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=12, cache=TRUE}
 fac <- rbind(read.csv('data/EducationElectricityData.csv', na.strings=c("n/a","NA")),
              read.csv('data/HealthElectricityData.csv', na.strings=c("n/a","NA")))
-ggplot(data=fac, aes(x=long, y=lat, color=sector, alpha=0.5)) + geom_point() + 
+ggplot() +  
+  geom_point(data=fac, aes(x=long, y=lat, color=sector, alpha=0.2)) + 
   xlim(2.6,14.7) + ylim(4.2,13.9) + scale_color_manual(values=c('#00BFC4', '#F8766D')) +
   theme(axis.title=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), 
-        panel.grid=element_blank(), panel.background=element_rect(fill='#888888'),
-          legend.position = "none")
-#+ stat_density2d(aes(fill = ..level.., alpha=0.2), geom="polygon")
+        panel.grid=element_blank(), panel.background=element_rect(fill='#aaaaaa'),
+          legend.position = "none") +
+  geom_map(data=states, aes(map_id=id), fill="transparent", color='#888888', map=states) +
+  geom_text(data=stateCenters, aes(x=x, y=y, label=STATE), color='#444444')
 ```
 ```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=12, cache=TRUE}
 facagg <- ddply(idata.frame(fac), .(lga_id), function(df) {
@@ -238,4 +242,67 @@ Denominator: all schools in LGA.
 
 ---
 
-## 3. 
+## 3. A detailed look at 4 LGAs in Katsina
+![The four LGAs](images/4LGAs.png)
+
+---
+
+
+## Localities sized by demand
+![](images/LocalitiesWithSize.png) 
+
+Demand derived from approximate number of households and market structures.
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+four_fac <- subset(fac, lga_id %in% c(146, 223, 228, 661))
+four_fac$WhichSystem <- ifelse(four_fac$grid, 'GRID', ifelse(four_fac$solar, 'SOLAR',
+                  ifelse(four_fac$genset, 'GENERATOR', 'NONE')))
+
+four_loco <- subset(loc, lga_id %in% c(146, 223, 228, 661))
+four_loco$sector <- 'LOCALITIES'
+four_loco <- rename(four_loco, c("X_gps_latitude"="lat", "four_loco$X_gps_longitude"="long"))
+four_loco$WhichSystem <- ifelse(four_loco$grid, 'GRID', 'NO-GRID')
+four_loco$funtional_power <- as.logical(recodeVar(as.character(four_loco$electric_grid_questions.grid_functional_yn), src=c('yes', 'no'), tgt=c(TRUE, FALSE), default=NA))
+
+four <- rbind.fill(four_fac, four_loco)
+fourl <- subset(lgas, )
+ggplot(data=four, aes(x=long, y=lat, color=WhichSystem)) + geom_point(aes(shape=sector)) +
+  scale_color_manual(values=c('pink', muted('blue'), 'grey', 'darkgrey', 'yellow')) + xlim(c(6.9,7.38)) + ylim(c(11.1, 11.9)) + geom_point(data=subset(four, functional_power), shape=8, color='black', alpha=0.5) +
+  theme(axis.title=element_blank(), axis.text=element_blank(),
+        axis.ticks = element_blank(), panel.grid=element_blank(), 
+        panel.background=element_rect(fill='#ffffff'),
+        legend.position = "bottom") +
+  geom_map(data=fl, aes(map_id=id), fill="transparent", color='#444444', map=fl)
+```
+---
+
+## Cross-sectoral demand
+![](images/DemandPoints.png)
+
+---
+
+## Existing Power Avaialability
+![](images/HPower.png)
+![](images/EPower.png)
+
+---
+
+## Projected Electricity Infrastructure
+![](images/NPOutput.png)
+
+---
+
+## Needed
+
+* Better population data -- localities are a far approximation
+* Existing grid lines (projection assumes no grid in previous example)
+* Demand projections and international procurement costs (lots of experience)
+* Project demand out to 10 years based on growth models
+* Costing, financing
+
+---
+
+## Thank you
+
+Modi Research Group, Earth Institute, Columbia University
+
