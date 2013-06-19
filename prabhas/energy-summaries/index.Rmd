@@ -284,7 +284,7 @@ ggplot(data=four, aes(x=long, y=lat, color=WhichSystem)) + geom_point(aes(shape=
 
 ---
 
-## Existing Power Avaialability
+## Existing Power Availability
 ![](images/HPower.png)
 ![](images/EPower.png)
 
