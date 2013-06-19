@@ -28,7 +28,7 @@ library(scales)
 
 Total: 23,000+ localities in 654 LGAs. Heatmap of where localities were surveyed:
 
-```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=12, cache=TRUE}
+```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=8, cache=TRUE}
 library(doBy)
 source('~/Code/formhub.R/R/formhub.R')
 loc <- formhubRead("data/Local_661_Merged.csv", "data/Localities_05_06_2012.json")
@@ -161,6 +161,9 @@ facagg <- ddply(idata.frame(fac), .(lga_id), function(df) {
     Grid = bool_proportion(df$grid),
     Solar = bool_proportion(df$solar),
     Generator = bool_proportion(df$genset),
+    GridOutOfPower = bool_proportion(df$grid, df$grid | df$solar | df$genset),
+    SolarOutOfPower = bool_proportion(df$solar, df$grid | df$solar | df$genset),
+    GeneratorOutOfPower = bool_proportion(df$genset, df$grid | df$solar | df$genset),
     GridFunctional = bool_proportion(df$grid_functional=='yes', df$grid),
     SolarFunctional = bool_proportion(df$solar_functional=='yes', df$solar),
     GeneratorFunctional = bool_proportion(df$generator_functional=='yes', df$genset)
@@ -171,15 +174,15 @@ facagg <- merge(facagg, lgaas, by="lga_id")
 ```
 ---
 
-## What % use ...
+## Ouf of facilities with power, which use ...
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=4, cache=TRUE}
-boxplot_by_zone(facagg, 'Grid')
-boxplot_by_zone(facagg, 'Generator')
-boxplot_by_zone(facagg, 'Solar')
-bin_and_map(facagg, 'Grid', nostatename=TRUE)
-bin_and_map(facagg, 'Generator', nostatename=TRUE)
-bin_and_map(facagg, 'Solar', nostatename=TRUE)
+boxplot_by_zone(facagg, 'GridOutOfPower')
+boxplot_by_zone(facagg, 'GeneratorOutOfPower')
+boxplot_by_zone(facagg, 'SolarOutOfPower')
+bin_and_map(facagg, 'GridOutOfPower', nostatename=TRUE)
+bin_and_map(facagg, 'GeneratorOutOfPower', nostatename=TRUE)
+bin_and_map(facagg, 'SolarOutOfPower', nostatename=TRUE)
 ```
 
 ---
@@ -306,3 +309,11 @@ ggplot(data=four, aes(x=long, y=lat, color=WhichSystem)) + geom_point(aes(shape=
 
 Modi Research Group, Earth Institute, Columbia University
 
+![](images/ModiTeam.png)
+
+---
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+bin_and_map(facagg, 'FunctionalPower_Health', nostatename=TRUE)
+bin_and_map(facagg, 'FunctionalPower_Education', nostatename=TRUE)
+```
