@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Two tools for reproducible data work</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Two tools for reproducible data work">
+  <meta name="author" content="Prabhas Pokharel, Modi Research Group">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+    <link rel="stylesheet" href = "assets/css/custom.css">
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+    <!-- END LOGO SLIDE -->
+    
+
+    <!-- TITLE SLIDE -->
+    <!-- Should I move this to a Local Layout File? -->
+    <slide class="title-slide segue nobackground">
+      <hgroup class="auto-fadein">
+        <h1>Two tools for reproducible data work</h1>
+        <h2></h2>
+        <p>Prabhas Pokharel, Modi Research Group<br/></p>
+      </hgroup>
+          </slide>
+
+    <!-- SLIDES -->
+      <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>What will you get out of this?</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><p><strong>R users</strong>: Get introduced to <a href="http://www.rstudio.com/ide/docs/authoring/using_markdown">R-Markdown</a>, a tool for doing data analysis and presentation work together.</p></li>
+<li><p><strong>Other data people</strong>: Get introduced to <a href="https://en.wikipedia.org/wiki/Make_software">make</a>, which lets you write down steps to reproduce data pipelines.</p></li>
+<li><p><strong>Bonus, (most immediately applicable) for R folks</strong>: <code>makemake</code> (or <code>pipelineR</code>), a tool to use make without most of the work.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>The theme</h2>
+  </hgroup>
+  <article>
+    <p>Data analysis, visualization, presentation, whatever, should be <strong>reproducible</strong>.</p>
+
+<p>Our aim is to automate the &quot;re-creation&quot; / &quot;reproduction&quot;.</p>
+
+<p>What you get out of easy / automated reproduction:</p>
+
+<ul>
+<li>work becomes easy to <strong>share</strong></li>
+<li>easy to <strong>iterate on</strong></li>
+<li>easy to <strong>collaborate with others</strong></li>
+<li>easier to <strong>hand off</strong></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="segue dark" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Tool #1 -- RMarkdown</h2>
+  </hgroup>
+  <article>
+    
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>But first, an aside</h2>
+  </hgroup>
+  <article>
+    <iframe src="http://www.darkcoding.net/software/markdown-quick-reference/" width="801" height="601"></iframe>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>Rmd has made two things easier, for me:</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><code>literate</code> / exploratory data analysis (ie, explain what you are doing)</li>
+<li>data-based presentations (explanations in pictures)</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>1.1 &quot;Literate&quot; data analysis -- explain what you are doing</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li><p><a href="http://bl.ocks.org/prabhasp/raw/5030005/">How to make choropleths in R</a></p></li>
+<li><p><a href="http://nbviewer.ipython.org/5105037">Analyzing how the Times writes about men vs. women</a> -- Neal Caren</p></li>
+<li><p><a href="http://bl.ocks.org/prabhasp/raw/5156070/">Bamboo benchmarks</a></p></li>
+<li><p><a href="http://bl.ocks.org/prabhasp/raw/4529702/">Nigeria coverage gap analysis without facility lists</a></p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>A deeper dive -- &quot;How to make Choropleths in R&quot;</h2>
+  </hgroup>
+  <article>
+    <iframe src="http://bl.ocks.org/prabhasp/raw/5030005/" width="801" height="601"></iframe>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Directory structure</h2>
+  </hgroup>
+  <article>
+    <pre><code class="r">list.files(&quot;~/Code/gists/NepalChoropleths/&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;index.html&quot;                 &quot;index.rmd&quot;                 
+## [3] &quot;zfstat-062 reformatted.csv&quot; &quot;zfstat-063 reformatted.csv&quot;
+</code></pre>
+
+<ul>
+<li>File organization: <code>index.Rmd</code> compiles to <code>index.md</code> and <code>index.html</code>
+
+<ul>
+<li>In this case, the data is in the same directory</li>
+</ul></li>
+<li>If you host this work in github, there are automatic renders available. For <code>github</code>, if you create a <code>gh-pages</code> branch, <code>index.html</code> files are auto-rendered at <code>YOURUSERNAME.github.io/REPONAME/</code>. For github gists, use <a href="http://bl.ocks.org/prabhasp">http://bl.ocks.org/YOURGITHUBUSERNAME</a>.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Rmd syntax</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>The file itself
+
+<ul>
+<li>Code and markdown are interspersed together</li>
+<li>&quot;Compilation&quot;: &quot;Knit HTML&quot; button</li>
+<li>Or directly: <code>setwd(appropriate directory)</code>; <code>knit2html(&#39;index.Rmd&#39;)</code>.
+<iframe src="http://gist.github.com/prabhasp/5030005#file-index-rmd/" width="801" height="601"></iframe></li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>1.2 Hide the code</h2>
+  </hgroup>
+  <article>
+    <p>The code block can include many options (caching, showing warnings or not, heights and widths of figures). If we simply hide the code, we can get documents which aren&#39;t about explaining what you did, but your results!</p>
+
+<iframe src="http://bl.ocks.org/prabhasp/raw/5156070/" width="801" height="601"></iframe>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>1.2 Hide the code -- Presentations!</h2>
+  </hgroup>
+  <article>
+    <p>Finally, if you employ the convention of using the line breaks <code>---</code> as slide breaks, this file can convert readily to a presentation!</p>
+
+<ul>
+<li><a href="http://prabhasp.github.io/Haiti-Health-Access-Analysis/">Visualizing Health Access in Haiti</a></li>
+<li><a href="http://prabhasp.github.io/Presentations/prabhas/energy-summaries/">Visualizing Energy Access in Nigeria</a></li>
+<li><a href="http://prabhasp.github.io/Presentations/prabhas/kigali-mopup-presentation">Mopup, a summary</a></li>
+</ul>
+
+<p>For instructions, see <a href="http://slidify.org/">slidify</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Presentations deep dive</h2>
+  </hgroup>
+  <article>
+    <iframe src="http://prabhasp.github.io/Presentations/prabhas/kigali-mopup-presentation/" width="801" height="601"></iframe> 
+ 
+
+<hr>
+
+<h2>Some Rmd words of wisdom:</h2>
+
+<ul>
+<li><p>Learn <code>ggplot2</code>. Its an amazing graphics library that lets you make graphics as you make the data for the graphics. javascript has got nothing (besides interactivity) on <code>ggplot</code>.</p></li>
+<li><p>The &quot;slides&quot; version of this I&#39;ve found most useful in my work. A great way of leading people through analysis.</p></li>
+<li><p>You can &quot;print&quot; the slides to pdf, and even convert them to ppt if you have Adobe Acrobat Pro.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="segue dark" id="slide-13" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <p>So that was <strong>cool</strong>, how about something useful?</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    
+  </hgroup>
+  <article>
+    <p><a href="http://bost.ocks.org/mike/make/">http://bost.ocks.org/mike/make/</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>How make has made <strong>our</strong> lives easier: The Nigeria Project</h2>
+  </hgroup>
+  <article>
+    <p><img src="NMIS_Indicator_Pipeline-1.png" alt="NMIS-Pipeline-1"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>How make has made <strong>our</strong> lives easier: The Nigeria Project</h2>
+  </hgroup>
+  <article>
+    <p><img src="NMIS_Indicator_Pipeline-2.png" alt="NMIS-Pipeline-2"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-17" style="background:;">
+  <hgroup>
+    <h2>A makefile can help us with that!</h2>
+  </hgroup>
+  <article>
+    <p><img src="NMIS_Indicator_Pipeline-2.png" alt="NMIS-Pipeline-2"></p>
+
+<pre><code>merged.csv: raw_data_1.csv raw_data_2.csv raw_data_1.csv Merge.R
+    Rscript Merge.R
+dropped.csv: merged.csv DropOutliers.R
+    Rscript DropOutliers.R
+facility.csv: dropped.csv FacilityIndicators.R
+    Rscript FacilityIndicators.R
+lga.csv: faclity.csv LGAIndicators.R
+    Rscript LGAIndicators.R
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>Cool!</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>make helped us basically &quot;write down&quot; our pipeline</li>
+<li>reproduction is as simple as typing &quot;make&quot; on the command line</li>
+<li>document the process</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>But there is more.</h2>
+  </hgroup>
+  <article>
+    <p>What I showed you before was a very simplistic picture, the NMIS pipeline actually looks like this:</p>
+
+<p><img src="dependency_graph.png" alt="Dependency Graph"></p>
+
+<h2>How big is this Makefile?</h2>
+
+<h2>MakeMake</h2>
+
+<ul>
+<li>analyses a folder worth of R scripts, and writes your makefile for you.</li>
+<li>looks at function calls like &quot;read.csv&quot;, &quot;write.csv&quot; and other things like that
+to figure out what your scripts read and write, and auto-write a makefile.</li>
+<li>also can run a dependency analyzer for you.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-20" style="background:;">
+  <hgroup>
+    <h2>How to use</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>Once a name decision is made, look for it on github.com/modilabs</li>
+<li>(makemake, makemakeR, pipelineR) </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="" id="slide-21" style="background:;">
+  <hgroup>
+    <h2>Lessons</h2>
+  </hgroup>
+  <article>
+    <ul>
+<li>make is super useful. I even use it for smaller projects (Haiti demo?).</li>
+<li>for Rmarkdown projects, I write a small makefile that links index.html and index.Rmd together. Then, as I&#39;m modifying the project, I run <code>while TRUE; do make; sleep 10; done</code> on the command line; every ten minutes, my presentation is re-compiled if I have modified it recently.</li>
+<li>if you don&#39;t have the rights to re-distribute data, great way to tell people what data they need.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+      <slide class="centered" id="slide-22" style="background:;">
+  <hgroup>
+    <h2>Thank You</h2>
+  </hgroup>
+  <article>
+    <p>Prabhas Pokharel</p>
+
+<p><a href="http://modi.mech.columbia.edu">Sustainable Engineering Group</a></p>
+
+<p>Earth Institute</p>
+
+<p>Columbia University</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+
+  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+<!-- Grab CDN jQuery, fall back to local if offline -->
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+<script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery-1.7.min.js"><\/script>')</script>
+<!-- Load Javascripts for Widgets -->
+<!-- LOAD HIGHLIGHTER JS FILES -->
+<script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- DONE LOADING HIGHLIGHTER JS FILES -->
+</html>

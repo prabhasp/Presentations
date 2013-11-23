@@ -1,0 +1,9 @@
+strong, b {
+    font-weight: bold;
+}
+.segue h2 {
+    line-height: normal;
+}
+.centered * {
+    text-align: center;
+}
