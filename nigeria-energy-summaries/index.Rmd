@@ -10,27 +10,41 @@ widgets     : []            # {mathjax, quiz, bootstrap}
 mode        : selfcontained # {standalone, draft}
 
 ---
-
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
-setwd("~/Code/presentations/prabhas/energy-summaries/")
-load('../NigeriaPresentationUtils.RData')
+setwd("~/Code/presentations/nigeria-energy-summaries/")
+load('../prabhas/NigeriaPresentationUtils.RData')
 library(ggplot2)
 library(scales)
 ```
-## Outline
-1. Grid data from localities survey
-2. Grid vs. solar vs. generator data from health + education surveys
+
+## Outline of the presentation
+
+1. Grid data from __localities survey__
+
+2. Grid vs. solar vs. generator data from health + education __facilities surveys__
+
 3. Katsina -- example of detailed demand analysis
 
 ---
 
 ## 1. Localities survey
 
-Total: 23,000+ localities in 654 LGAs. Heatmap of where localities were surveyed:
+ * Geo-located population data is the key to planning and analysis, in particular demand detection.
+ * Data was not possible to obtain from the Nigerian Population Commission.
+ * Localities survey is an approximation. We go to each locality, and ask how many households there are.
+ 
+ ![Household Question in Localities Survey](images/LocalitiesSurvey_Households.png)
+ * A total of 23,000+ localities in 654 LGAs were surveyed.
+ 
+---
 
-```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=8, cache=TRUE}
+## 1. Localities survey overview
+
+Because of issues with the compendium of localities in Nigeria, every this surveying has uneven coverage throughout Nigeria. An overview of where data available is below; each black point is a locality. Blue “heatmap” overlay shows regions with many localities surveyed.
+
+```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
 library(doBy)
-source('~/Code/formhub.R/R/formhub.R')
+library(formhub)
 loc <- formhubRead("data/Local_661_Merged.csv", "data/Localities_05_06_2012.json")
 
 loc <- rename(loc, c("X_lga_id" = "lga_id"))
@@ -41,42 +55,53 @@ loc$grid <- loc$grid_proximity=='connected_to_grid'
 loc$hhnum <- as.numeric(recodeVar(as.character(loc$households_number), 
                        src=c("101_to_250_hh", "21_to_50_hh", "251_to_500_hh", "51_to_100_hh","less_20_hh","more_500_hh"),
                        tgt=c('175', '35', '375', '75', '10', '750'), default=NA, keep.na=T))
+```
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+ggplot(data=loc, aes(x=X_gps_longitude, y=X_gps_latitude)) + 
+    geom_point() + theme_blank(legend.position='none') +
+    stat_density2d(aes(fill = ..level..), alpha=0.5, geom="polygon") +
+    geom_map(data=states, aes(map_id=id, x=long, y=lat), 
+             fill="transparent", color='#444444', map=states)
 
-ggplot(data=loc, aes(x=X_gps_longitude, y=X_gps_latitude)) + geom_point() + stat_density2d(aes(fill = ..level.., alpha=0.2), geom="polygon") +
-  theme(axis.title=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), 
-        panel.grid=element_blank(), panel.background=element_rect(fill='#cccccc'), legend.position = "none") +
-  geom_map(data=states, aes(map_id=id, x=long, y=lat), fill="transparent", color='#444444', map=states) +
-  geom_text(data=stateCenters, aes(x=x, y=y, label=STATE))
+ll <- read.csv("~/Dropbox/Nigeria/Nigeria 661 Baseline Data Cleaning/lgas.csv")
+ll$PopulationDensity <- cut(ll$pop_density_2006, c(0, 51, 101, 501, 1001, 5001, 10000, 100000), c("<= 50", "51-100", "101-500", "501-1000", "1001-5000", "5001-10000", "10000+"), right=FALSE)
+lga_map(geom_map(data=ll, aes(map_id=lga_id, fill=PopulationDensity), map=lgas)) + 
+    theme_blank() + labs(fill="Population Desnity\n(Person per Sq. Km)") + 
+    guides(fill = guide_legend(nrow = 2)) 
 ```
 
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+---
+
+## Example data visualization
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=4, cache=TRUE}
 lgaloc <- ddply(idata.frame(loc), .(lga_id), function(df) {
   data.frame(
     lga_id = df[1,'lga_id'],
     lga = df[1, 'lga'],
     state = df[1, 'state'],
     zone = df[1, 'zone'],
-    HouseholdAggregate = sum(df$hhnum, na.rm=T),
-    Population = df[1,'pop_2006'],
-    Density = df[1,'pop_density_2006'],
     GridPct = bool_proportion(df$grid_proximity=='connected_to_grid'),
     GridFunctional = bool_proportion_string(df$electric_grid_questions.grid_functional_yn),
     HHGridPct = ratio(ifelse(df$grid, df$hhnum, 0), df$hhnum),
     IndividualSystems = bool_proportion_string(df$individual_electricity_systems_yn)
     )
 })
-```
-
----
-
-## What % of localities have grid?
-
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=4.5, fig.width=5, cache=TRUE}
 boxplot_by_zone(lgaloc, 'GridPct')
 bin_and_map(lgaloc, 'GridPct', nostatename=TRUE)
 ```
 
 <i> Throughout this presentation, we aggregate data at the LGA level to calculate a percentage of localities, such as percentage of localities with grid. The map (on the right) aggregates these into groups and plots the colors based on group; the greener the color, higher the percentage. The boxplot (on the left) shows the range of the value across LGAs in a zone. The box shows LGAs between 25th and 75th percentile, ie, the "middle 50%" of the LGAs in that zone. The center line is the median LGA, and any LGAs represented as dots are outliers.</i>
+
+
+---
+## What % of localities have grid?
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+boxplot_by_zone(lgaloc, 'GridPct')
+bin_and_map(lgaloc, 'GridPct', nostatename=TRUE)
+```
+Numerator: localities in which "grid reaches (connects to) at least one structure within the locality". Denominator: all surveyed localities.
 
 ---
 
@@ -85,8 +110,7 @@ bin_and_map(lgaloc, 'GridPct', nostatename=TRUE)
 boxplot_by_zone(lgaloc, 'HHGridPct')
 bin_and_map(lgaloc, 'HHGridPct')
 ```
-
-Household numbers derived from household-number bins of  _Less than 20_, _21 to 50_, _51 to 100_, _101 to 250_, _251 to 500_ and _More than 500_ as reported by locality residents.
+Numerator: approximate number of households in localities where at least one structure is connected to grid. Denominator: approximate number of households in surveyed localities.
 
 ---
 
@@ -97,29 +121,42 @@ boxplot_by_zone(lgaloc, 'GridFunctional')
 bin_and_map(lgaloc, 'GridFunctional')
 ```
 
-Denominator: localities with grid. Numerator: localities which say the grid is functional.
+Denominator: localities with grid. Numerator: localities which say the grid is functional ("Functional" means that it has provided at least one hour of electricity on at least one day during the past one week to the majority of connected structures within the locality).
 
 ---
 
 ## What is the major problem with the grid?
-This map takes the problem that is reported by most localities in LGAs as the reason for a disfunctional grid. Values are only used for LGAs in which more than two localities responded with a reason grid doesn't function in their LGA. Data represents 971 localities in 145 LGAs.
-Color: problem reported by the highest number of localities in an LGA.
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=5.5, fig.width=6, cache=TRUE}
-loc$grid_problem <- factor(recodeVar(as.character(loc$electric_grid_questions.grid_problem), src=c("multiple_probs_derelict", "new_not_turned_on", "probs_network_1km", "probs_power_supply", "probs_transformer_1km", "other"), tgt=c("Multiple", "New; Never turned on", "In Network (<1km)", "Supply", "Transformer", "Other"), default=NA))
-na_less_locs <- subset(loc, !is.na(loc$grid_problem))
+loc$grid_problem <- 
+    revalue(loc$electric_grid_questions.grid_problem, 
+            c("multiple_probs_derelict"="Multiple",
+              "new_not_turned_on"="New; Never turned on",
+              "probs_network_1km"="In Network (<1km)",
+              "probs_power_supply"="Supply",
+              "probs_transformer_1km"="Transformer",
+              "other"="Other", "dk"=NA, "NA"=NA
+              ))
+na_less_locs <- na.omit(loc[,c("lga_id", "zone", "grid_problem")])
 problem_summary <- subset(ddply(idata.frame(na_less_locs), .(lga_id), function(df) {
-  data.frame(MajorGridProblem= if(nrow(df) > 2) {df[which.max(df$grid_problem), 'grid_problem']} else {'NA'},
+  data.frame(MajorGridProblem = if(nrow(df) > 3) {
+                                    df[which.max(df$grid_problem), 'grid_problem']
+                                 } else {'NA'},
+             N = nrow(df),
              lga_id = df[1,'lga_id'],
              zone=df[1,'zone']
   )
 }), MajorGridProblem != 'NA')
-barplot_by_zone <- function(df, colname, zonecolname='zone', title=NA) {
-  ggplot(data=df, aes_string(x=zonecolname, fill=colname)) + geom_bar()   +
-    labs(title=ifelse(is.na(title), colname, title)) + 
-    theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title.x=element_blank()) + scale_fill_brewer(type="qual", palette=2)
-}; barplot_by_zone(problem_summary, 'MajorGridProblem') + ylab("Number of LGAs in zone,\nin which given problem is reported by most localities.")
-lga_map(geom_map(data = problem_summary, aes(map_id = lga_id, fill = MajorGridProblem), map=lgas), filltype="qual") + theme(legend.position='none')
+````
+This map takes the problem that is reported by most localities in LGAs as the reason for a disfunctional grid. Values are only used for LGAs in which __more than three localities responded__ with a reason grid doesn't function in their LGA. Data represents 839 localities in 101 LGAs.
+Color: problem reported by the highest number of localities in an LGA.
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=5.5, fig.width=6, cache=TRUE}
+ggplot(data=problem_summary, aes(x=zone, fill=MajorGridProblem)) + geom_bar() + 
+    scale_fill_brewer(type="qual", palette=2) + 
+    labs(y="Number of LGAs in zone,\nin which given problem is reported by most localities.")
+lga_map(geom_map(data = problem_summary, aes(map_id = lga_id, fill = MajorGridProblem), 
+                 map=lgas), filltype="qual") + theme_blank(legend.position='none')
 ```
 
 ---
@@ -131,41 +168,45 @@ boxplot_by_zone(lgaloc, 'IndividualSystems')
 bin_and_map(lgaloc, 'IndividualSystems')
 ```
 
+Numerator: localities in which "ANY structures in the locality are served by individual or shared electricity systems". Denominator: surveyed localities.
+
 ---
 
 ## 2. Surveys at Health and Education Facilities
 <font color="#00BFC4">Education</font> -- 69,000+ facilities, <font color="#F8766D">Health</font> -- 24,00+ facilities, across 768 LGAs.
 
-```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=12, cache=TRUE}
-fac <- rbind(read.csv('data/EducationElectricityData.csv', na.strings=c("n/a","NA")),
-             read.csv('data/HealthElectricityData.csv', na.strings=c("n/a","NA")))
-ggplot() +  
-  geom_point(data=fac, aes(x=long, y=lat, color=sector, alpha=0.2)) + 
-  xlim(2.6,14.7) + ylim(4.2,13.9) + scale_color_manual(values=c('#00BFC4', '#F8766D')) +
-  theme(axis.title=element_blank(), axis.text=element_blank(), axis.ticks = element_blank(), 
-        panel.grid=element_blank(), panel.background=element_rect(fill='#aaaaaa'),
-          legend.position = "none") +
-  geom_map(data=states, aes(map_id=id), fill="transparent", color='#888888', map=states) +
+```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+fac <- rbind(read.csv("data/HealthElectricityData.csv", na.strings=c("n/a","NA")),
+             read.csv("data/EducationElectricityData.csv", na.strings=c("n/a","NA")))
+ggplot(data=subset(fac, sector="EDUCATION")) +  
+  xlim(2.6,14.7) + ylim(4.2,13.9) + theme_blank(legend.position = "none") +
+  geom_point(aes(x=long, y=lat), alpha=0.2, color='#00BFC4') +  
+  geom_map(data=states, aes(map_id=id), fill="transparent", color='#666666', map=states) +
   geom_text(data=stateCenters, aes(x=x, y=y, label=STATE), color='#444444')
+ggplot(data=subset(fac, sector="HEALTH")) +  
+  xlim(2.6,14.7) + ylim(4.2,13.9) + theme_blank(legend.position = "none") +
+  geom_point(aes(x=long, y=lat), alpha=0.2, color= '#F8766D') +  
+  geom_map(data=states, aes(map_id=id), fill="transparent", color='#666666', map=states) +
+  geom_text(data=stateCenters, aes(x=x, y=y, label=STATE), color='#444444')
+
 ```
 ```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=12, cache=TRUE}
 facagg <- ddply(idata.frame(fac), .(lga_id), function(df) {
   data.frame(
     lga_id = df[1,'lga_id'],
-    HealthFacilities = icount(df$sector=="HEALTH"),
-    EduFacilities = icount(df$sector=="EDUCATION"),
-    ALLFAcilities = nrow(df),
     FunctionalPower_Health = bool_proportion(df$functional_power, df$sector=="HEALTH"),
     FunctionalPower_Education = bool_proportion(df$functional_power, df$sector=="EDUCATION"),
-    FunctionalPower_Overall = bool_proportion(df$functional_power),
     Grid = bool_proportion(df$grid),
     Solar = bool_proportion(df$solar),
     Generator = bool_proportion(df$genset),
-    GridOutOfPower = bool_proportion(df$grid, df$grid | df$solar | df$genset),
-    SolarOutOfPower = bool_proportion(df$solar, df$grid | df$solar | df$genset),
-    GeneratorOutOfPower = bool_proportion(df$genset, df$grid | df$solar | df$genset),
+    PercentGridInPoweredFacilities = bool_proportion(df$grid, df$grid | df$solar | df$genset),
+    PercentSolarInPoweredFacilities = bool_proportion(df$solar, df$grid | df$solar | df$genset),
+    PercentGeneratorInPoweredFacilities = bool_proportion(df$genset, df$grid | df$solar | df$genset),
+    PercentGridInFunctionalPowerFacilities = bool_proportion(df$grid, df$functional_power),
+    PercentSolarInFunctionalPowerFacilities = bool_proportion(df$solar, df$functional_power),
+    PercentGeneratorInFunctionalPowerFacilities = bool_proportion(df$genset, df$functional_power),
     GridFunctional = bool_proportion(df$grid_functional=='yes', df$grid),
-    SolarFunctional = bool_proportion(df$solar_functional=='yes', df$solar),
+    #SolarFunctional = bool_proportion(df$solar_functional=='yes', df$solar), 
     GeneratorFunctional = bool_proportion(df$generator_functional=='yes', df$genset)
   )
 })
@@ -174,64 +215,13 @@ facagg <- merge(facagg, lgaas, by="lga_id")
 ```
 ---
 
-## Ouf of facilities with power, which use ...
-
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=4, cache=TRUE}
-boxplot_by_zone(facagg, 'GridOutOfPower')
-boxplot_by_zone(facagg, 'GeneratorOutOfPower')
-boxplot_by_zone(facagg, 'SolarOutOfPower')
-bin_and_map(facagg, 'GridOutOfPower', nostatename=TRUE)
-bin_and_map(facagg, 'GeneratorOutOfPower', nostatename=TRUE)
-bin_and_map(facagg, 'SolarOutOfPower', nostatename=TRUE)
-```
-
----
-
-## Which electric system is dominant?
-
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
-g <- replace(facagg$Grid, is.na(facagg$Grid), 0)
-s <- replace(facagg$Solar, is.na(facagg$Solar), 0)
-n <- replace(facagg$Generator, is.na(facagg$Generator), 0)
-gt <- (function(eps) { function(a, b) { (a - b) > eps }}) (.1)
-
-facagg$DominantElectricSystem <- 
-  ifelse(gt(g,s) & gt(g,n),'GRID',
-  ifelse(gt(n,s) & gt(n,g), 'GEN',
-  ifelse(gt(s,n) & gt(s,g),'SOLAR',
-  # no dominance
-  ifelse(gt(s,n) & gt(g,n), 'GRID | SOLAR',
-  ifelse(gt(g,s) & gt(n,s), 'GEN | GRID',
-  ifelse(gt(n,g) & gt(s,g), 'SOLAR | GEN',
-         'No dominance'))))))
-  
-barplot_by_zone(facagg, 'DominantElectricSystem')  + labs(y="Number of LGAs in this zone with dominant system")
-lga_map(geom_map(data = facagg, aes(map_id = lga_id, fill = DominantElectricSystem), map=lgas), filltype="qual") + theme(legend.position='none')
-```
----
-
-## What is functional?
-
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=4, cache=TRUE}
-
-boxplot_by_zone(facagg, 'GridFunctional')
-boxplot_by_zone(facagg, 'GeneratorFunctional')
-boxplot_by_zone(facagg, 'SolarFunctional')
-bin_and_map(facagg, 'GridFunctional', nostatename=TRUE)
-bin_and_map(facagg, 'GeneratorFunctional', nostatename=TRUE)
-bin_and_map(facagg, 'SolarFunctional', nostatename=TRUE)
-
-```
-
----
-
 ## Functional Power in Health Facilities
 
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
 boxplot_by_zone(facagg, 'FunctionalPower_Health')
 bin_and_map(facagg, 'FunctionalPower_Health', nostatename=TRUE)
 ```
-Denominator: all health facilities in LGA.
+Numerator: health facilities in which pwoer is _functional_. Denominator: all health facilities in LGA.
 
 ---
 
@@ -241,10 +231,42 @@ Denominator: all health facilities in LGA.
 boxplot_by_zone(facagg, 'FunctionalPower_Education')
 bin_and_map(facagg, 'FunctionalPower_Education', nostatename=TRUE)
 ```
-Denominator: all schools in LGA.
+
+Numerator: schools in which there is _functional_ power. Denominator: all schools in LGA.
 
 ---
 
+
+## Ouf of facilities with power, which use ...
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=4, cache=TRUE}
+boxplot_by_zone(facagg, 'PercentGridInPoweredFacilities')
+boxplot_by_zone(facagg, 'PercentGeneratorInPoweredFacilities')
+boxplot_by_zone(facagg, 'PercentSolarInPoweredFacilities')
+bin_and_map(facagg, 'PercentGridInPoweredFacilities', nostatename=TRUE)
+bin_and_map(facagg, 'PercentGeneratorInPoweredFacilities', nostatename=TRUE)
+bin_and_map(facagg, 'PercentSolarInPoweredFacilities', nostatename=TRUE)
+```
+Numerator: facility with given type of power source. Denominator: all facilities that have power.
+
+---
+
+## Which sources are more functional?
+
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=3.5, fig.width=3.5, cache=TRUE}
+boxplot_by_zone(facagg, 'GridFunctional')
+boxplot_by_zone(facagg, 'GeneratorFunctional')
+```
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=3.5, fig.width=3.5, cache=TRUE}
+bin_and_map(facagg, 'GridFunctional', nostatename=TRUE)
+bin_and_map(facagg, 'GeneratorFunctional', nostatename=TRUE)
+```
+Numerator: facilities with given source of power, in which the power is functional. Denominator: facilities with given source of power.
+
+
+---
+
+    
 ## 3. A detailed look at 4 LGAs in Katsina
 ![The four LGAs](images/4LGAs.png)
 
@@ -284,12 +306,6 @@ ggplot(data=four, aes(x=long, y=lat, color=WhichSystem)) + geom_point(aes(shape=
 
 ---
 
-## Existing Power Availability
-![](images/HPower.png)
-![](images/EPower.png)
-
----
-
 ## Projected Electricity Infrastructure
 ![](images/NPOutput.png)
 
@@ -306,14 +322,6 @@ ggplot(data=four, aes(x=long, y=lat, color=WhichSystem)) + geom_point(aes(shape=
 ---
 
 ## Thank you
+Sustainable Engineering Lab, Earth Institute, Columbia University
 
-Modi Research Group, Earth Institute, Columbia University
-
-![](images/ModiTeam.png)
-
----
-
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
-bin_and_map(facagg, 'FunctionalPower_Health', nostatename=TRUE)
-bin_and_map(facagg, 'FunctionalPower_Education', nostatename=TRUE)
-```
+![Modi Research Group](images/ModiTeam.png)

@@ -31,18 +31,20 @@ state_overlay <- function() {
 }
 stateCenters <- state_overlay()
 
-lga_map = function(geom_map_thingy, filltype="seq", nostatenames=FALSE) {
-    
-  ggplot() + geom_map_thingy + expand_limits(x=lgas$long, y=lgas$lat) +
+theme_blank = function(legend.position='bottom', fill='#888888') {
     theme(axis.title=element_blank(), axis.text=element_blank(),
           axis.ticks = element_blank(), panel.grid=element_blank(), 
-          panel.background=element_rect(fill='#888888'),
-          legend.position = "bottom") +
-          scale_fill_brewer(type=filltype, palette=2) +
-          geom_map(data=states, aes(map_id=id), fill="transparent", color='#444444', map=states) +
-    if (!nostatenames) {
-      geom_text(data=stateCenters, aes(x=x, y=y, label=STATE))
-    }
+          panel.background=element_rect(fill=fill),
+          legend.position = legend.position)
+}
+
+lga_map = function(geom_map_thingy, filltype="seq", nostatenames=FALSE) {
+  ggplot() + geom_map_thingy + expand_limits(x=lgas$long, y=lgas$lat) +
+     theme_blank() + scale_fill_brewer(type=filltype, palette=2) +
+     geom_map(data=states, aes(map_id=id), fill="transparent", color='#444444', map=states) +
+     if (!nostatenames) {
+       geom_text(data=stateCenters, aes(x=x, y=y, label=STATE))
+     }
 }
 
 ratioToPct <- function(numvec, round.digits=0) {

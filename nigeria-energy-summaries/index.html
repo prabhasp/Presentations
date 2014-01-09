@@ -40,13 +40,13 @@
     <!-- SLIDES -->
       <slide class="" id="slide-1" style="background:;">
   <hgroup>
-    <h2>Outline</h2>
+    <h2>Outline of the presentation</h2>
   </hgroup>
   <article>
     <ol>
-<li>Grid data from localities survey</li>
-<li>Grid vs. solar vs. generator data from health + education surveys</li>
-<li>Katsina -- example of detailed demand analysis</li>
+<li><p>Grid data from <strong>localities survey</strong></p></li>
+<li><p>Grid vs. solar vs. generator data from health + education <strong>facilities surveys</strong></p></li>
+<li><p>Katsina -- example of detailed demand analysis</p></li>
 </ol>
 
   </article>
@@ -58,9 +58,22 @@
     <h2>1. Localities survey</h2>
   </hgroup>
   <article>
-    <p>Total: 23,000+ localities in 654 LGAs. Heatmap of where localities were surveyed:</p>
+    <ul>
+<li>Geo-located population data is the key to planning and analysis, in particular demand detection.</li>
+<li>Data was not possible to obtain from the Nigerian Population Commission.</li>
+<li><p>Localities survey is an approximation. We go to each locality, and ask how many households there are.</p>
 
-<p><img src="figure/unnamed-chunk-2.png" alt="plot of chunk unnamed-chunk-2"> </p>
+<p><img src="images/LocalitiesSurvey_Households.png" alt="Household Question in Localities Survey"></p></li>
+<li><p>A total of 23,000+ localities in 654 LGAs were surveyed.</p></li>
+</ul>
+
+<hr>
+
+<h2>1. Localities survey overview</h2>
+
+<p>Because of issues with the compendium of localities in Nigeria, every this surveying has uneven coverage throughout Nigeria. An overview of where data available is below; each black point is a locality. Blue “heatmap” overlay shows regions with many localities surveyed.</p>
+
+<p><img src="figure/unnamed-chunk-31.png" alt="plot of chunk unnamed-chunk-3"> <img src="figure/unnamed-chunk-32.png" alt="plot of chunk unnamed-chunk-3"> </p>
 
   </article>
   <!-- Presenter Notes -->
@@ -68,7 +81,7 @@
 
       <slide class="" id="slide-3" style="background:;">
   <hgroup>
-    <h2>What % of localities have grid?</h2>
+    <h2>Example data visualization</h2>
   </hgroup>
   <article>
     <p><img src="figure/unnamed-chunk-41.png" alt="plot of chunk unnamed-chunk-4"> <img src="figure/unnamed-chunk-42.png" alt="plot of chunk unnamed-chunk-4"> </p>
@@ -81,12 +94,12 @@
 
       <slide class="" id="slide-4" style="background:;">
   <hgroup>
-    <h2>What % of households have grid?</h2>
+    <h2>What % of localities have grid?</h2>
   </hgroup>
   <article>
     <p><img src="figure/unnamed-chunk-51.png" alt="plot of chunk unnamed-chunk-5"> <img src="figure/unnamed-chunk-52.png" alt="plot of chunk unnamed-chunk-5"> </p>
 
-<p>Household numbers derived from household-number bins of  <em>Less than 20</em>, <em>21 to 50</em>, <em>51 to 100</em>, <em>101 to 250</em>, <em>251 to 500</em> and <em>More than 500</em> as reported by locality residents.</p>
+<p>Numerator: localities in which &quot;grid reaches (connects to) at least one structure within the locality&quot;. Denominator: all surveyed localities.</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -94,12 +107,12 @@
 
       <slide class="" id="slide-5" style="background:;">
   <hgroup>
-    <h2>What % of localities say the grid is functional?</h2>
+    <h2>What % of households have grid?</h2>
   </hgroup>
   <article>
     <p><img src="figure/unnamed-chunk-61.png" alt="plot of chunk unnamed-chunk-6"> <img src="figure/unnamed-chunk-62.png" alt="plot of chunk unnamed-chunk-6"> </p>
 
-<p>Denominator: localities with grid. Numerator: localities which say the grid is functional.</p>
+<p>Numerator: approximate number of households in localities where at least one structure is connected to grid. Denominator: approximate number of households in surveyed localities.</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -107,13 +120,12 @@
 
       <slide class="" id="slide-6" style="background:;">
   <hgroup>
-    <h2>What is the major problem with the grid?</h2>
+    <h2>What % of localities say the grid is functional?</h2>
   </hgroup>
   <article>
-    <p>This map takes the problem that is reported by most localities in LGAs as the reason for a disfunctional grid. Values are only used for LGAs in which more than two localities responded with a reason grid doesn&#39;t function in their LGA. Data represents 971 localities in 145 LGAs.
-Color: problem reported by the highest number of localities in an LGA.</p>
+    <p><img src="figure/unnamed-chunk-71.png" alt="plot of chunk unnamed-chunk-7"> <img src="figure/unnamed-chunk-72.png" alt="plot of chunk unnamed-chunk-7"> </p>
 
-<p><img src="figure/unnamed-chunk-71.png" alt="plot of chunk unnamed-chunk-7"> <img src="figure/unnamed-chunk-72.png" alt="plot of chunk unnamed-chunk-7"> </p>
+<p>Denominator: localities with grid. Numerator: localities which say the grid is functional (&quot;Functional&quot; means that it has provided at least one hour of electricity on at least one day during the past one week to the majority of connected structures within the locality).</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -121,10 +133,13 @@ Color: problem reported by the highest number of localities in an LGA.</p>
 
       <slide class="" id="slide-7" style="background:;">
   <hgroup>
-    <h2>Use of back-up / &quot;individual home&quot; systems</h2>
+    <h2>What is the major problem with the grid?</h2>
   </hgroup>
   <article>
-    <p><img src="figure/unnamed-chunk-81.png" alt="plot of chunk unnamed-chunk-8"> <img src="figure/unnamed-chunk-82.png" alt="plot of chunk unnamed-chunk-8"> </p>
+    <p>This map takes the problem that is reported by most localities in LGAs as the reason for a disfunctional grid. Values are only used for LGAs in which <strong>more than three localities responded</strong> with a reason grid doesn&#39;t function in their LGA. Data represents 839 localities in 101 LGAs.
+Color: problem reported by the highest number of localities in an LGA.</p>
+
+<p><img src="figure/unnamed-chunk-91.png" alt="plot of chunk unnamed-chunk-9"> <img src="figure/unnamed-chunk-92.png" alt="plot of chunk unnamed-chunk-9"> </p>
 
   </article>
   <!-- Presenter Notes -->
@@ -132,12 +147,12 @@ Color: problem reported by the highest number of localities in an LGA.</p>
 
       <slide class="" id="slide-8" style="background:;">
   <hgroup>
-    <h2>2. Surveys at Health and Education Facilities</h2>
+    <h2>Use of back-up / &quot;individual home&quot; systems</h2>
   </hgroup>
   <article>
-    <p><font color="#00BFC4">Education</font> -- 69,000+ facilities, <font color="#F8766D">Health</font> -- 24,00+ facilities, across 768 LGAs.</p>
+    <p><img src="figure/unnamed-chunk-101.png" alt="plot of chunk unnamed-chunk-10"> <img src="figure/unnamed-chunk-102.png" alt="plot of chunk unnamed-chunk-10"> </p>
 
-<p><img src="figure/unnamed-chunk-9.png" alt="plot of chunk unnamed-chunk-9"> </p>
+<p>Numerator: localities in which &quot;ANY structures in the locality are served by individual or shared electricity systems&quot;. Denominator: surveyed localities.</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -145,10 +160,12 @@ Color: problem reported by the highest number of localities in an LGA.</p>
 
       <slide class="" id="slide-9" style="background:;">
   <hgroup>
-    <h2>Ouf of facilities with power, which use ...</h2>
+    <h2>2. Surveys at Health and Education Facilities</h2>
   </hgroup>
   <article>
-    <p><img src="figure/unnamed-chunk-111.png" alt="plot of chunk unnamed-chunk-11"> <img src="figure/unnamed-chunk-112.png" alt="plot of chunk unnamed-chunk-11"> <img src="figure/unnamed-chunk-113.png" alt="plot of chunk unnamed-chunk-11"> <img src="figure/unnamed-chunk-114.png" alt="plot of chunk unnamed-chunk-11"> <img src="figure/unnamed-chunk-115.png" alt="plot of chunk unnamed-chunk-11"> <img src="figure/unnamed-chunk-116.png" alt="plot of chunk unnamed-chunk-11"> </p>
+    <p><font color="#00BFC4">Education</font> -- 69,000+ facilities, <font color="#F8766D">Health</font> -- 24,00+ facilities, across 768 LGAs.</p>
+
+<p><img src="figure/unnamed-chunk-111.png" alt="plot of chunk unnamed-chunk-11"> <img src="figure/unnamed-chunk-112.png" alt="plot of chunk unnamed-chunk-11"> </p>
 
   </article>
   <!-- Presenter Notes -->
@@ -156,10 +173,12 @@ Color: problem reported by the highest number of localities in an LGA.</p>
 
       <slide class="" id="slide-10" style="background:;">
   <hgroup>
-    <h2>Which electric system is dominant?</h2>
+    <h2>Functional Power in Health Facilities</h2>
   </hgroup>
   <article>
-    <p><img src="figure/unnamed-chunk-121.png" alt="plot of chunk unnamed-chunk-12"> <img src="figure/unnamed-chunk-122.png" alt="plot of chunk unnamed-chunk-12"> </p>
+    <p><img src="figure/unnamed-chunk-131.png" alt="plot of chunk unnamed-chunk-13"> <img src="figure/unnamed-chunk-132.png" alt="plot of chunk unnamed-chunk-13"> </p>
+
+<p>Numerator: health facilities in which pwoer is <em>functional</em>. Denominator: all health facilities in LGA.</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -167,10 +186,12 @@ Color: problem reported by the highest number of localities in an LGA.</p>
 
       <slide class="" id="slide-11" style="background:;">
   <hgroup>
-    <h2>What is functional?</h2>
+    <h2>Functional Power in Schools</h2>
   </hgroup>
   <article>
-    <p><img src="figure/unnamed-chunk-131.png" alt="plot of chunk unnamed-chunk-13"> <img src="figure/unnamed-chunk-132.png" alt="plot of chunk unnamed-chunk-13"> <img src="figure/unnamed-chunk-133.png" alt="plot of chunk unnamed-chunk-13"> <img src="figure/unnamed-chunk-134.png" alt="plot of chunk unnamed-chunk-13"> <img src="figure/unnamed-chunk-135.png" alt="plot of chunk unnamed-chunk-13"> <img src="figure/unnamed-chunk-136.png" alt="plot of chunk unnamed-chunk-13"> </p>
+    <p><img src="figure/unnamed-chunk-141.png" alt="plot of chunk unnamed-chunk-14"> <img src="figure/unnamed-chunk-142.png" alt="plot of chunk unnamed-chunk-14"> </p>
+
+<p>Numerator: schools in which there is <em>functional</em> power. Denominator: all schools in LGA.</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -178,12 +199,12 @@ Color: problem reported by the highest number of localities in an LGA.</p>
 
       <slide class="" id="slide-12" style="background:;">
   <hgroup>
-    <h2>Functional Power in Health Facilities</h2>
+    <h2>Ouf of facilities with power, which use ...</h2>
   </hgroup>
   <article>
-    <p><img src="figure/unnamed-chunk-141.png" alt="plot of chunk unnamed-chunk-14"> <img src="figure/unnamed-chunk-142.png" alt="plot of chunk unnamed-chunk-14"> </p>
+    <p><img src="figure/unnamed-chunk-151.png" alt="plot of chunk unnamed-chunk-15"> <img src="figure/unnamed-chunk-152.png" alt="plot of chunk unnamed-chunk-15"> <img src="figure/unnamed-chunk-153.png" alt="plot of chunk unnamed-chunk-15"> <img src="figure/unnamed-chunk-154.png" alt="plot of chunk unnamed-chunk-15"> <img src="figure/unnamed-chunk-155.png" alt="plot of chunk unnamed-chunk-15"> <img src="figure/unnamed-chunk-156.png" alt="plot of chunk unnamed-chunk-15"> </p>
 
-<p>Denominator: all health facilities in LGA.</p>
+<p>Numerator: facility with given type of power source. Denominator: all facilities that have power.</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -191,12 +212,14 @@ Color: problem reported by the highest number of localities in an LGA.</p>
 
       <slide class="" id="slide-13" style="background:;">
   <hgroup>
-    <h2>Functional Power in Schools</h2>
+    <h2>Which sources are more functional?</h2>
   </hgroup>
   <article>
-    <p><img src="figure/unnamed-chunk-151.png" alt="plot of chunk unnamed-chunk-15"> <img src="figure/unnamed-chunk-152.png" alt="plot of chunk unnamed-chunk-15"> </p>
+    <p><img src="figure/unnamed-chunk-161.png" alt="plot of chunk unnamed-chunk-16"> <img src="figure/unnamed-chunk-162.png" alt="plot of chunk unnamed-chunk-16"> </p>
 
-<p>Denominator: all schools in LGA.</p>
+<p><img src="figure/unnamed-chunk-171.png" alt="plot of chunk unnamed-chunk-17"> <img src="figure/unnamed-chunk-172.png" alt="plot of chunk unnamed-chunk-17"> </p>
+
+<p>Numerator: facilities with given source of power, in which the power is functional. Denominator: facilities with given source of power.</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -242,18 +265,6 @@ Color: problem reported by the highest number of localities in an LGA.</p>
 
       <slide class="" id="slide-17" style="background:;">
   <hgroup>
-    <h2>Existing Power Availability</h2>
-  </hgroup>
-  <article>
-    <p><img src="images/HPower.png" alt="">
-<img src="images/EPower.png" alt=""></p>
-
-  </article>
-  <!-- Presenter Notes -->
-</slide>
-
-      <slide class="" id="slide-18" style="background:;">
-  <hgroup>
     <h2>Projected Electricity Infrastructure</h2>
   </hgroup>
   <article>
@@ -263,7 +274,7 @@ Color: problem reported by the highest number of localities in an LGA.</p>
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-19" style="background:;">
+      <slide class="" id="slide-18" style="background:;">
   <hgroup>
     <h2>Needed</h2>
   </hgroup>
@@ -280,25 +291,14 @@ Color: problem reported by the highest number of localities in an LGA.</p>
   <!-- Presenter Notes -->
 </slide>
 
-      <slide class="" id="slide-20" style="background:;">
+      <slide class="" id="slide-19" style="background:;">
   <hgroup>
     <h2>Thank you</h2>
   </hgroup>
   <article>
-    <p>Modi Research Group, Earth Institute, Columbia University</p>
+    <p>Sustainable Engineering Lab, Earth Institute, Columbia University</p>
 
-<p><img src="images/ModiTeam.png" alt=""></p>
-
-  </article>
-  <!-- Presenter Notes -->
-</slide>
-
-      <slide class="" id="slide-21" style="background:;">
-  <hgroup>
-    
-  </hgroup>
-  <article>
-    <p><img src="figure/unnamed-chunk-171.png" alt="plot of chunk unnamed-chunk-17"> <img src="figure/unnamed-chunk-172.png" alt="plot of chunk unnamed-chunk-17"> </p>
+<p><img src="images/ModiTeam.png" alt="Modi Research Group"></p>
 
   </article>
   <!-- Presenter Notes -->
