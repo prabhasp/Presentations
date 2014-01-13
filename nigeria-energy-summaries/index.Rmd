@@ -33,16 +33,17 @@ library(scales)
  * Data was not possible to obtain from the Nigerian Population Commission.
  * Localities survey is an approximation. We go to each locality, and ask how many households there are.
  
- ![Household Question in Localities Survey](images/LocalitiesSurvey_Households.png)
- * A total of 23,000+ localities in 654 LGAs were surveyed.
- 
+![Household Question in Localities Survey](images/LocalitiesSurvey_Households.png)
+
+A total of 23,000+ localities in 654 LGAs were surveyed.
+
 ---
 
 ## 1. Localities survey overview
 
 Because of issues with the compendium of localities in Nigeria, every this surveying has uneven coverage throughout Nigeria. An overview of where data available is below; each black point is a locality. Blue “heatmap” overlay shows regions with many localities surveyed.
 
-```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
+```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=5, fig.width=5, cache=TRUE}
 library(doBy)
 library(formhub)
 loc <- formhubRead("data/Local_661_Merged.csv", "data/Localities_05_06_2012.json")
@@ -221,7 +222,7 @@ facagg <- merge(facagg, lgaas, by="lga_id")
 boxplot_by_zone(facagg, 'FunctionalPower_Health')
 bin_and_map(facagg, 'FunctionalPower_Health', nostatename=TRUE)
 ```
-Numerator: health facilities in which pwoer is _functional_. Denominator: all health facilities in LGA.
+Numerator: health facilities in which power is _functional_. Denominator: all health facilities in LGA.
 
 ---
 
@@ -237,9 +238,9 @@ Numerator: schools in which there is _functional_ power. Denominator: all school
 ---
 
 
-## Ouf of facilities with power, which use ...
+## Out of facilities with power, which use ...
 
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=4, fig.width=4, cache=TRUE}
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=3.5, fig.width=3.5, cache=TRUE}
 boxplot_by_zone(facagg, 'PercentGridInPoweredFacilities')
 boxplot_by_zone(facagg, 'PercentGeneratorInPoweredFacilities')
 boxplot_by_zone(facagg, 'PercentSolarInPoweredFacilities')
@@ -252,17 +253,15 @@ Numerator: facility with given type of power source. Denominator: all facilities
 ---
 
 ## Which sources are more functional?
+Numerator: facilities with given source of power, in which the power is functional. Denominator: facilities with given source of power.
 
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=3.5, fig.width=3.5, cache=TRUE}
+```{r echo=F, warning=F, message=F, comment=NA, fig.height=3, fig.width=3, cache=TRUE}
+
 boxplot_by_zone(facagg, 'GridFunctional')
 boxplot_by_zone(facagg, 'GeneratorFunctional')
-```
-```{r echo=F, warning=F, message=F, comment=NA, fig.height=3.5, fig.width=3.5, cache=TRUE}
 bin_and_map(facagg, 'GridFunctional', nostatename=TRUE)
 bin_and_map(facagg, 'GeneratorFunctional', nostatename=TRUE)
 ```
-Numerator: facilities with given source of power, in which the power is functional. Denominator: facilities with given source of power.
-
 
 ---
 
@@ -291,13 +290,13 @@ four_loco$funtional_power <- as.logical(recodeVar(as.character(four_loco$electri
 
 four <- rbind.fill(four_fac, four_loco)
 fourl <- subset(lgas, )
-ggplot(data=four, aes(x=long, y=lat, color=WhichSystem)) + geom_point(aes(shape=sector)) +
-  scale_color_manual(values=c('pink', muted('blue'), 'grey', 'darkgrey', 'yellow')) + xlim(c(6.9,7.38)) + ylim(c(11.1, 11.9)) + geom_point(data=subset(four, functional_power), shape=8, color='black', alpha=0.5) +
-  theme(axis.title=element_blank(), axis.text=element_blank(),
-        axis.ticks = element_blank(), panel.grid=element_blank(), 
-        panel.background=element_rect(fill='#ffffff'),
-        legend.position = "bottom") +
-  geom_map(data=fl, aes(map_id=id), fill="transparent", color='#444444', map=fl)
+#ggplot(data=four, aes(x=long, y=lat, color=WhichSystem)) + geom_point(aes(shape=sector)) +
+#  scale_color_manual(values=c('pink', muted('blue'), 'grey', 'darkgrey', 'yellow')) + xlim(c(6.9,7.38)) + ylim(c(11.1, 11.9)) + geom_point(data=subset(four, functional_power), shape=8, color='black', alpha=0.5) +
+#  theme(axis.title=element_blank(), axis.text=element_blank(),
+#        axis.ticks = element_blank(), panel.grid=element_blank(), 
+#        panel.background=element_rect(fill='#ffffff'),
+#        legend.position = "bottom") +
+#  geom_map(data=fourl, aes(map_id=id), fill="transparent", color='#444444', map=fl)
 ```
 ---
 
@@ -306,8 +305,15 @@ ggplot(data=four, aes(x=long, y=lat, color=WhichSystem)) + geom_point(aes(shape=
 
 ---
 
+## Demand Derivations (kWh/year)
+![](images/electricityDemand.png)
+
+---
+
 ## Projected Electricity Infrastructure
 ![](images/NPOutput.png)
+
+Results were derived using [NetworkPlanner](http://networkplanner.modilabs.org/), which takes: geo-located demand data, cost of electricity generation and transmission technologies, population growth, etc. Details in [these papers](http://modi.mech.columbia.edu/rural-electrification/).
 
 ---
 

@@ -22,7 +22,6 @@
 /* Fonts and Spacing */
 article p, article li, article li.build{
   font-family: 'Helvetica', 'Crimson Text', 'Garamond',  'Palatino', sans-serif;
-  text-align: justify;
   font-size:22px;
   line-height: 1.5em;
 }
