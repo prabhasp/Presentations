@@ -44,7 +44,6 @@ A total of 23,000+ localities in 654 LGAs were surveyed.
 Because of issues with the compendium of localities in Nigeria, every this surveying has uneven coverage throughout Nigeria. An overview of where data available is below; each black point is a locality. Blue “heatmap” overlay shows regions with many localities surveyed.
 
 ```{r echo=FALSE, warning=F, message=F, comment=NA, fig.height=5, fig.width=5, cache=TRUE}
-library(doBy)
 library(formhub)
 loc <- formhubRead("data/Local_661_Merged.csv", "data/Localities_05_06_2012.json")
 
@@ -53,9 +52,9 @@ loc <- merge(loc, read.csv("~/Dropbox/Nigeria/Nigeria 661 Baseline Data Cleaning
              by="lga_id")
 
 loc$grid <- loc$grid_proximity=='connected_to_grid'
-loc$hhnum <- as.numeric(recodeVar(as.character(loc$households_number), 
-                       src=c("101_to_250_hh", "21_to_50_hh", "251_to_500_hh", "51_to_100_hh","less_20_hh","more_500_hh"),
-                       tgt=c('175', '35', '375', '75', '10', '750'), default=NA, keep.na=T))
+loc$hhnum <- as.numeric(as.character(revalue(loc$households_number,
+    c("101_to_250_hh"=175, "21_to_50_hh" = 35, "251_to_500_hh" = 375, 
+      "51_to_100_hh" = 75, "less_20_hh" = 10, "more_500_hh" = 750))))
 ```
 ```{r echo=F, warning=F, message=F, comment=NA, fig.height=6, fig.width=6, cache=TRUE}
 ggplot(data=loc, aes(x=X_gps_longitude, y=X_gps_latitude)) + 
@@ -286,7 +285,9 @@ four_loco <- subset(loc, lga_id %in% c(146, 223, 228, 661))
 four_loco$sector <- 'LOCALITIES'
 four_loco <- rename(four_loco, c("X_gps_latitude"="lat", "four_loco$X_gps_longitude"="long"))
 four_loco$WhichSystem <- ifelse(four_loco$grid, 'GRID', 'NO-GRID')
-four_loco$funtional_power <- as.logical(recodeVar(as.character(four_loco$electric_grid_questions.grid_functional_yn), src=c('yes', 'no'), tgt=c(TRUE, FALSE), default=NA))
+four_loco$funtional_power <- as.logical(revalue(
+    four_loco$electric_grid_questions.grid_functional_yn, 
+    c("yes"=TRUE, "no"=FALSE)))
 
 four <- rbind.fill(four_fac, four_loco)
 fourl <- subset(lgas, )
